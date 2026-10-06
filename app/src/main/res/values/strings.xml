@@ -1,0 +1,270 @@
+<resources>
+    <string name="app_name">Murupi Restaurante</string>
+
+    <!-- Títulos -->
+    <string name="titulo_mesas">Mesas</string>
+    <string name="titulo_comanda">Mesa %1$s</string>
+    <string name="titulo_balcao">Balcão %1$d</string>
+    <string name="titulo_delivery">Delivery %1$d</string>
+    <string name="titulo_inicio">Pedidos</string>
+    <string name="aba_mesas">Mesas</string>
+    <string name="aba_balcao">Balcão</string>
+    <string name="aba_delivery">Delivery</string>
+    <string name="titulo_impressoras">Impressoras</string>
+    <string name="titulo_roteamento">Roteamento de impressão</string>
+    <string name="titulo_catalogo">Catálogo</string>
+    <string name="titulo_historico">Histórico de vendas</string>
+    <string name="historico">Histórico</string>
+    <string name="historico_vazio">Nenhuma conta fechada ainda.</string>
+    <string name="imprimir_historico">Imprimir histórico</string>
+    <string name="escolher_impressora">Escolha a impressora</string>
+    <string name="sem_impressora_historico">Cadastre uma impressora ativa primeiro.</string>
+    <string name="historico_impresso">Histórico enviado para: %1$s</string>
+    <string name="historico_falhou">Falha no histórico (%1$s): %2$s</string>
+    <string name="sobre">Sobre</string>
+    <string name="sobre_mensagem">Versão %1$s\n\nFeito por Fabio Silva</string>
+    <string name="reabrir_conta">Reabrir conta</string>
+    <string name="conta_reaberta">Conta %1$s reaberta.</string>
+    <string name="incluir_produto">Incluir Produto</string>
+
+    <!-- Comuns -->
+    <string name="ok">OK</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvar">Salvar</string>
+    <string name="excluir">Excluir</string>
+    <string name="remover">Remover</string>
+    <string name="fechar">Fechar</string>
+    <string name="adicionar">Adicionar</string>
+    <string name="concluir">Concluir</string>
+    <string name="buscar">Buscar</string>
+    <string name="total">Total</string>
+    <string name="total_valor">Total: %1$s</string>
+    <string name="simbolo_real">R$</string>
+    <string name="numero_invalido">Número inválido.</string>
+    <string name="valor_invalido">Valor inválido.</string>
+
+    <!-- Mesas -->
+    <string name="legenda_livres">Livres: %1$d</string>
+    <string name="legenda_ocupadas">Ocupadas: %1$d</string>
+    <string name="mesa_livre">Livre</string>
+    <string name="mesa_n">Mesa %1$d</string>
+    <string name="mesa_info_varias">%1$s\n%2$d comandas</string>
+    <string name="opcao_comanda">Comanda %1$s — %2$s</string>
+    <string name="opcao_nova_comanda">+ Nova comanda %1$s</string>
+    <string name="opcao_comanda_titulo">Comanda %1$s</string>
+    <string name="opcao_nova_comanda_titulo">+ Nova comanda %1$s</string>
+    <string name="opcao_nova_comanda_subtitulo">Abrir um novo pedido na mesa</string>
+    <string name="conta_fechada">Conta fechada</string>
+    <string name="impressoras">Impressoras</string>
+
+    <!-- Comanda -->
+    <string name="nenhum_produto_encontrado">Nenhum produto encontrado</string>
+    <string name="adicionar_produto">Adicionar produto</string>
+    <string name="sem_itens">Sem itens</string>
+    <string name="quantidade_x">%1$dx</string>
+    <string name="detalhe_item">%1$s un. · %2$s</string>
+    <string name="obs_valor">Obs: %1$s</string>
+    <string name="status_enviado">Enviado ✓</string>
+    <string name="status_pendente">Pendente</string>
+    <string name="imprimir_producao">Imprimir Produção</string>
+    <string name="imprimir_espelho">Imprimir Espelho</string>
+    <string name="efetuar_pagamento">Efetuar Pagamento</string>
+    <string name="transferir_comanda">Transferir Comanda</string>
+    <string name="informar_pessoas">Informar quantidade de pessoas</string>
+    <string name="nova_comanda_mesa">Nova comanda nesta mesa</string>
+    <string name="comanda_sem_itens">A comanda ainda não tem itens.</string>
+    <string name="reimprimir">Reimprimir</string>
+    <string name="imprimir">Imprimir</string>
+    <string name="reimprimir_pergunta">Todos os itens já foram enviados para a produção. Reimprimir tudo?</string>
+    <string name="nada_para_imprimir">Nada para imprimir.</string>
+    <string name="impressao_ok">Enviado para: %1$s</string>
+    <string name="envio_ok">✓ %1$s (%2$s): impresso</string>
+    <string name="envio_falhou">✗ %1$s (%2$s): %3$s</string>
+    <string name="sem_impressora_papel">⚠ Nenhuma impressora ativa com o papel %1$s.</string>
+    <string name="pendentes_continuam">Os itens que não saíram continuam pendentes e vão na próxima impressão de produção.</string>
+    <string name="item_ja_enviado">Este item já foi enviado para a produção. Alterações aqui não são reimpressas.</string>
+    <string name="item_removido">%1$s removido.</string>
+    <string name="remover_item">Remover item</string>
+    <string name="dividir_item">Dividir em itens de 1</string>
+    <string name="item_dividido">%1$s dividido em itens de 1.</string>
+    <string name="pre_visualizar">Pré-visualizar</string>
+    <string name="remover_item_enviado">\"%1$s\" já foi enviado para a produção. Remover mesmo assim? Avise a cozinha.</string>
+    <string name="quantidade_pessoas">Quantidade de pessoas</string>
+    <string name="transferir_comanda_n">Transferir comanda %1$s</string>
+    <string name="mesa_destino">Número da mesa de destino</string>
+    <string name="mesa_invalida">Informe uma mesa de 1 a %1$d.</string>
+    <string name="mesma_mesa">A comanda já está nesta mesa.</string>
+    <string name="mesa_ja_ocupada">A mesa %1$d já tem comanda aberta</string>
+    <string name="juntar_com">Juntar com a comanda %1$s (%2$s)</string>
+    <string name="manter_separada">Manter separada (nova comanda)</string>
+    <string name="comanda_transferida">Comanda transferida para a mesa %1$d.</string>
+    <string name="pagamento_comanda">Pagamento — %1$s</string>
+    <string name="total_a_pagar">Total a pagar</string>
+    <string name="valor_por_pessoa">%1$d pessoas: %2$s cada</string>
+    <string name="forma_pagamento">Forma de pagamento</string>
+    <string name="forma_dinheiro">Dinheiro</string>
+    <string name="forma_debito">Débito</string>
+    <string name="forma_credito">Crédito</string>
+    <string name="forma_pix">PIX</string>
+    <string name="escolha_forma_pagamento">Escolha a forma de pagamento.</string>
+    <string name="valor_recebido">Valor recebido (opcional)</string>
+    <string name="valor_insuficiente">Valor menor que o total.</string>
+    <string name="troco">Troco: %1$s</string>
+    <string name="confirmar_pagamento">Confirmar pagamento</string>
+    <string name="liberar_sem_consumo">A comanda não tem itens. Cancelar a comanda e liberar a mesa?</string>
+    <string name="liberar_mesa">Liberar mesa</string>
+    <string name="cancelar_sem_consumo">A comanda não tem itens. Cancelar a comanda?</string>
+    <string name="cancelar_comanda">Cancelar comanda</string>
+    <string name="comanda_paga">Comanda %1$s paga.</string>
+    <string name="comanda_paga_mesa_livre">Comanda %1$s paga. Mesa %2$d liberada.</string>
+    <string name="comanda_cancelada">Comanda %1$s cancelada (sem consumo).</string>
+
+    <!-- Incluir produto -->
+    <string name="buscar_produto">Buscar produto…</string>
+    <string name="categoria_vazia">Nenhum produto encontrado.\nCadastre produtos pelo menu ⋮ › Catálogo.</string>
+    <string name="preco_livre">Preço livre</string>
+    <string name="info_produto">%1$s · %2$s</string>
+    <string name="quantidade">Quantidade</string>
+    <string name="diminuir">Diminuir quantidade</string>
+    <string name="aumentar">Aumentar quantidade</string>
+    <string name="sinal_menos">−</string>
+    <string name="sinal_mais">+</string>
+    <string name="preco_unitario">Preço unitário</string>
+    <string name="informe_preco">Informe o preço.</string>
+    <string name="como_e_o_suco">Com leite ou sem leite?</string>
+    <string name="escolha_opcao_suco">Escolha com leite ou sem leite.</string>
+    <string name="observacao">Observação</string>
+    <string name="descreva_opcao">Descreva como o cliente quer</string>
+    <string name="item_adicionado">%1$dx %2$s adicionado.</string>
+    <string name="ver_comanda">Ver comanda</string>
+    <string name="novo_produto">Novo produto</string>
+    <string name="editar_produto">Editar produto</string>
+    <string name="excluir_produto">Excluir produto</string>
+    <string name="excluir_produto_pergunta">Excluir \"%1$s\" do cardápio? Itens já lançados nas comandas não mudam.</string>
+    <string name="nome_produto">Nome do produto</string>
+    <string name="informe_nome">Informe o nome.</string>
+    <string name="nome_cliente">Nome do cliente</string>
+    <string name="endereco_entrega">Endereço de entrega</string>
+    <string name="informe_endereco">Informe o endereço.</string>
+    <string name="novo_pedido">Novo pedido</string>
+    <string name="vazio_balcao">Nenhum pedido no balcão.\nToque em + para abrir.</string>
+    <string name="vazio_delivery">Nenhum delivery aberto.\nToque em + para abrir.</string>
+    <string name="preco">Preço</string>
+    <string name="preco_vazio_livre">Deixe vazio para digitar o preço na hora do lançamento.</string>
+
+    <!-- Catálogo e estoque -->
+    <string name="catalogo">Catálogo</string>
+    <string name="catalogo_vazio">Nenhum produto.\nToque em + para cadastrar.</string>
+    <string name="cardapio_vazio">Nenhum produto disponível.\nCadastre produtos pelo menu ⋮ › Catálogo.</string>
+    <string name="todas_categorias">Todas as categorias</string>
+    <string name="categoria">Categoria</string>
+    <string name="informe_categoria">Escolha a categoria.</string>
+    <string name="grupo">Grupo (opcional)</string>
+    <string name="grupo_ajuda">Produtos do mesmo grupo aparecem juntos e expansíveis. Ex.: Graviola</string>
+    <string name="grupo_valor">grupo %1$s</string>
+    <string name="composicao">Composição</string>
+    <string name="composicao_ajuda">Aparece abaixo do nome no lançamento. Ex.: Maracujá, leite em pó e gelo</string>
+    <string name="controlar_estoque">Controlar estoque</string>
+    <string name="quantidade_disponivel">Quantidade disponível</string>
+    <string name="estoque_ajuda">Diminui a cada lançamento e volta se o item for removido da comanda.</string>
+    <string name="informe_quantidade">Informe a quantidade (0 ou mais).</string>
+    <string name="disponivel_venda">Disponível para venda</string>
+    <string name="oculto">Oculto</string>
+    <string name="produto_salvo">\"%1$s\" salvo.</string>
+    <string name="produto_excluido">\"%1$s\" excluído.</string>
+    <string name="estoque_n">%1$d em estoque</string>
+    <string name="sem_controle_estoque">sem controle de estoque</string>
+    <string name="restam_n">Restam %1$d</string>
+    <string name="esgotado">Esgotado</string>
+    <string name="produto_esgotado">%1$s está esgotado.</string>
+    <string name="estoque_insuficiente">Estoque insuficiente de %1$s: restam %2$d.</string>
+    <string name="a_partir_de">a partir de %1$s</string>
+    <string name="de_n_em_n">de %1$d em %1$d</string>
+    <string name="vendido_de_n_em_n">Vendido de %1$d em %1$d</string>
+    <string name="multiplo_venda">Vendido de quantas em quantas unidades</string>
+    <string name="multiplo_ajuda">Ex.: 5 para entradas vendidas de 5 em 5 (R$ 1,00 cada). Padrão: 1.</string>
+    <string name="multiplo_invalido">Informe um número de 1 a %1$d.</string>
+    <string name="como_e_o_suco_rapido">Com leite ou sem leite? Cada toque lança 1.</string>
+    <string name="toque_lanca_1">1 toque = 1</string>
+    <string name="item_adicionado_obs">%1$dx %2$s (%3$s) adicionado.</string>
+
+    <!-- Impressoras -->
+    <string name="nenhuma_impressora">Nenhuma impressora configurada.\nUse \"Buscar na rede\" ou \"Adicionar\".</string>
+    <string name="papeis_faltando">Falta impressora ativa para: %1$s</string>
+    <string name="buscar_na_rede">Buscar na rede</string>
+    <string name="adicionar_manual">Adicionar</string>
+    <string name="testar">Testar</string>
+    <string name="enviando_teste">Enviando teste para %1$s…</string>
+    <string name="teste_ok">Teste enviado para %1$s.</string>
+    <string name="teste_falhou">Falha ao imprimir em %1$s: %2$s</string>
+    <string name="impressora_salva">Impressora \"%1$s\" salva.</string>
+    <string name="ip_porta">%1$s:%2$d</string>
+    <string name="papel_detalhe">%1$s · %2$s</string>
+    <string name="largura_80">80 mm (48 colunas)</string>
+    <string name="largura_58">58 mm (32 colunas)</string>
+    <string name="sem_acentos">sem acentos</string>
+    <string name="com_acentos">com acentos</string>
+    <string name="inativa">inativa</string>
+    <string name="ultimo_uso">último uso %1$s</string>
+    <string name="nova_impressora">Nova impressora</string>
+    <string name="editar_impressora">Editar impressora</string>
+    <string name="nome_impressora">Nome (ex.: Cozinha)</string>
+    <string name="endereco_ip">Endereço IP</string>
+    <string name="porta">Porta</string>
+    <string name="ip_invalido">IP inválido (ex.: 192.168.0.50).</string>
+    <string name="porta_invalida">Porta inválida.</string>
+    <string name="papel_impressora">Papel da impressora</string>
+    <string name="papel_espelho">Espelho — conta com preço e total</string>
+    <string name="papel_cozinha">Cozinha — produção sem preço (pratos e bebidas)</string>
+    <string name="papel_sucos">Sucos — só sucos, sem preço</string>
+    <string name="largura_papel">Largura do papel</string>
+    <string name="imprimir_sem_acentos">Imprimir sem acentos (recomendado)</string>
+    <string name="impressora_ativa">Impressora ativa</string>
+    <string name="excluir_impressora">Excluir impressora</string>
+    <string name="excluir_impressora_pergunta">Excluir a impressora \"%1$s\"?</string>
+    <string name="buscar_impressoras">Buscar impressoras na rede</string>
+    <string name="procurando">Procurando impressoras…</string>
+    <string name="procurando_em">Procurando em %1$s (porta 9100)…</string>
+    <string name="sem_rede">Sem conexão Wi-Fi. Conecte o celular na mesma rede das impressoras.</string>
+    <string name="toque_para_cadastrar">Toque em um IP para cadastrar a impressora:</string>
+    <string name="ip_ja_cadastrado">%1$s (já cadastrada: %2$s)</string>
+    <string name="nenhuma_encontrada">Nenhuma impressora encontrada na porta 9100. Confira se estão ligadas e na mesma rede Wi-Fi.</string>
+
+    <!-- Roteamento -->
+    <string name="roteamento_categorias">Roteamento de categorias</string>
+    <string name="roteamento_explicacao">Toque numa categoria para escolher em qual impressora de produção ela sai. Refrigerantes saem na cozinha, abaixo dos pratos.</string>
+    <string name="imprime_em">Sai na impressora de</string>
+    <string name="setor_cozinha">Cozinha</string>
+    <string name="setor_sucos">Sucos</string>
+    <string name="setor_refrigerantes">Refrigerantes (sai na cozinha, abaixo dos pratos)</string>
+    <string name="setor_refrigerantes_curto">Refrigerantes (cozinha)</string>
+    <string name="destacar_demanda">Destacar na produção com >>> (sob demanda)</string>
+    <string name="perguntar_opcoes_suco">Perguntar opções do suco ao lançar</string>
+    <string name="flag_demanda">destaque >>></string>
+    <string name="flag_opcoes_suco">pergunta opções do suco</string>
+
+    <plurals name="pessoas">
+        <item quantity="one">%d pessoa</item>
+        <item quantity="other">%d pessoas</item>
+    </plurals>
+    <plurals name="itens">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d itens</item>
+    </plurals>
+    <plurals name="itens_pendentes">
+        <item quantity="one">%d item aguardando envio para a produção</item>
+        <item quantity="other">%d itens aguardando envio para a produção</item>
+    </plurals>
+    <plurals name="aviso_pendentes_pagamento">
+        <item quantity="one">Atenção: %d item ainda não foi enviado para a produção.</item>
+        <item quantity="other">Atenção: %d itens ainda não foram enviados para a produção.</item>
+    </plurals>
+    <plurals name="impressoras_encontradas">
+        <item quantity="one">%d impressora encontrada.</item>
+        <item quantity="other">%d impressoras encontradas.</item>
+    </plurals>
+    <plurals name="opcoes_grupo">
+        <item quantity="one">%d opção</item>
+        <item quantity="other">%d opções</item>
+    </plurals>
+</resources>

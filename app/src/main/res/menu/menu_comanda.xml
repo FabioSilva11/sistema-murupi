@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_imprimir_producao"
+        android:icon="@drawable/ic_print"
+        android:title="@string/imprimir_producao"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_imprimir_espelho"
+        android:icon="@drawable/ic_receipt"
+        android:title="@string/imprimir_espelho"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_pagamento"
+        android:title="@string/efetuar_pagamento"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_transferir"
+        android:title="@string/transferir_comanda"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_pessoas"
+        android:title="@string/informar_pessoas"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_nova_comanda"
+        android:title="@string/nova_comanda_mesa"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_reabrir"
+        android:title="@string/reabrir_conta"
+        app:showAsAction="never" />
+</menu>

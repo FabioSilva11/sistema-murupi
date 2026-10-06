@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lançamento/edição de item: quantidade, preço livre, opções do suco e observação. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/textInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_secundario"
+            android:textSize="14sp"
+            tools:text="ISCAS · R$ 16,00" />
+
+        <TextView
+            android:id="@+id/textAviso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/aviso_fundo"
+            android:padding="8dp"
+            android:text="@string/item_ja_enviado"
+            android:textColor="@color/pendente"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/quantidade"
+                android:textColor="@color/texto_primario"
+                android:textSize="16sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMenos"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/diminuir"
+                android:paddingHorizontal="0dp"
+                android:text="@string/sinal_menos"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textQuantidade"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/texto_primario"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMais"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/aumentar"
+                android:paddingHorizontal="0dp"
+                android:text="@string/sinal_mais"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textPasso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="@color/texto_secundario"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="Vendido de 5 em 5"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutPreco"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/preco_unitario"
+            android:visibility="gone"
+            app:prefixText="@string/simbolo_real">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editPreco"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="0123456789.,"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/textOpcoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/como_e_o_suco"
+            android:textColor="@color/murupi_blue_escuro"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/grupoOpcoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:chipSpacing="8dp"
+            app:chipSpacingVertical="4dp"
+            app:singleSelection="true" />
+
+        <TextView
+            android:id="@+id/textErroOpcoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/escolha_opcao_suco"
+            android:textColor="@color/observacao"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutObservacao"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/observacao">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editObservacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDividir"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/dividir_item"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/fundo_total"
+            android:gravity="end"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp"
+            android:textColor="@color/murupi_blue_escuro"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            tools:text="Total: R$ 32,00" />
+    </LinearLayout>
+</ScrollView>

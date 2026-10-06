@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Grupo de produtos (ex.: Graviola): tocar expande/recolhe as variantes. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/margem_linha_produto"
+    android:layout_marginVertical="2dp"
+    android:background="@drawable/fundo_item_produto"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="58dp"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/faixa"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        tools:background="#00ACC1" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp">
+
+        <TextView
+            android:id="@+id/textNome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_primario"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Graviola" />
+
+        <TextView
+            android:id="@+id/textResumo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_secundario"
+            android:textSize="12sp"
+            tools:text="2 opções · a partir de R$ 6,00" />
+
+        <TextView
+            android:id="@+id/textComposicao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_secundario"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="Maracujá, leite em pó"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/seta"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="12dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_expandir" />
+
+</LinearLayout>

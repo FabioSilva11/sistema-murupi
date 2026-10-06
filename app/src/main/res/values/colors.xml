@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="murupi_blue">#FF1565C0</color>
+    <color name="murupi_blue_escuro">#FF0D47A1</color>
+    <color name="murupi_blue_claro">#FFD6E3FF</color>
+    <color name="branco_translucido">#CCFFFFFF</color>
+    <color name="fundo">#FFF2F4F7</color>
+
+    <!-- Mesas: verde = livre, azul = ocupada -->
+    <color name="mesa_livre">#FF43A047</color>
+    <color name="mesa_ocupada">#FF1565C0</color>
+
+    <color name="texto_primario">#DE000000</color>
+    <color name="texto_secundario">#8A000000</color>
+    <color name="pendente">#FFEF6C00</color>
+    <color name="enviado">#FF2E7D32</color>
+    <color name="observacao">#FFC62828</color>
+    <color name="aviso_fundo">#FFFFF3E0</color>
+    <!-- Linha da conta fechada no diálogo da mesa: vermelho claro. -->
+    <color name="fechada_fundo">#FFFFEBEE</color>
+</resources>

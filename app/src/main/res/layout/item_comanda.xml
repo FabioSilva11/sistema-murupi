@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <TextView
+        android:id="@+id/textQuantidade"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/murupi_blue"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="2x" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textNome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_primario"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Isca de Frango" />
+
+        <TextView
+            android:id="@+id/textDetalhe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_secundario"
+            android:textSize="13sp"
+            tools:text="R$ 16,00 un. · ISCAS" />
+
+        <TextView
+            android:id="@+id/textObservacao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/observacao"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            tools:text="Obs: sem cebola"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_primario"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="R$ 32,00" />
+
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            tools:text="Pendente"
+            tools:textColor="@color/pendente" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="2dp"
+    android:background="@drawable/fundo_item_produto"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="58dp"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/faixa"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        tools:background="#00ACC1" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/textNome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_primario"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Suco de Graviola 300ml" />
+
+        <TextView
+            android:id="@+id/textDetalhe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/texto_secundario"
+            android:textSize="12sp"
+            tools:text="SUCOS · grupo Graviola · R$ 6,00" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="12dp"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textEstoque"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="12 em estoque" />
+
+        <TextView
+            android:id="@+id/textOculto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/oculto"
+            android:textColor="@color/observacao"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

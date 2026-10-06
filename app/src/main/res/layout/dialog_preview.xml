@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Prévia do ticket antes de aprovar a impressão. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="420dp">
+
+    <TextView
+        android:id="@+id/textPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fundo"
+        android:fontFamily="monospace"
+        android:padding="12dp"
+        android:textColor="@color/texto_primario"
+        android:textSize="12sp"
+        tools:text="COZINHA&#10;MESA 9.1&#10;================&#10;2x Isca de Frango" />
+</ScrollView>

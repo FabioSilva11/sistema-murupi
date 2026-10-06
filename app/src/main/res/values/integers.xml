@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="colunas_mesas">4</integer>
+    <integer name="colunas_categorias">3</integer>
+</resources>

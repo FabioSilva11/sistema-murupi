@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo"
+    android:orientation="vertical"
+    tools:context=".ui.impressora.ImpressorasActivity">
+
+    <include
+        android:id="@+id/barra"
+        layout="@layout/app_bar" />
+
+    <TextView
+        android:id="@+id/textAviso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/aviso_fundo"
+        android:padding="12dp"
+        android:textColor="@color/pendente"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:text="Falta impressora para: Espelho, Sucos"
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingVertical="4dp"
+            tools:listitem="@layout/item_impressora" />
+
+        <TextView
+            android:id="@+id/textVazio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="@string/nenhuma_impressora"
+            android:textColor="@color/texto_secundario"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/barraAcoes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBuscar"
+            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/buscar_na_rede"
+            app:icon="@drawable/ic_wifi" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAdicionar"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="@string/adicionar_manual"
+            app:icon="@drawable/ic_add" />
+    </LinearLayout>
+
+</LinearLayout>

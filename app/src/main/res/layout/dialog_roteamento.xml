@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/imprime_em"
+        android:textColor="@color/texto_primario"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/grupoSetor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioCozinha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setor_cozinha" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioSucos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setor_sucos" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radioRefrigerantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setor_refrigerantes" />
+    </RadioGroup>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkDemanda"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/destacar_demanda" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkOpcoesSuco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/perguntar_opcoes_suco" />
+</LinearLayout>

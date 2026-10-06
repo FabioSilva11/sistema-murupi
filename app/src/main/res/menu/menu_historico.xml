@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_imprimir_historico"
+        android:icon="@drawable/ic_print"
+        android:title="@string/imprimir_historico"
+        app:showAsAction="ifRoom" />
+</menu>

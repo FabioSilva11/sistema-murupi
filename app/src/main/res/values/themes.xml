@@ -1,0 +1,15 @@
+<resources>
+    <!-- Tema claro Expressive (Android 16): header azul, fundo cinza-claro. -->
+    <style name="Base.Theme.MurupiComandas" parent="Theme.Material3.Expressive.Light.NoActionBar">
+        <item name="colorPrimary">@color/murupi_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/murupi_blue_claro</item>
+        <item name="colorOnPrimaryContainer">@color/murupi_blue_escuro</item>
+        <item name="colorSecondaryContainer">@color/murupi_blue_claro</item>
+        <item name="colorOnSecondaryContainer">@color/murupi_blue_escuro</item>
+        <item name="android:colorBackground">@color/fundo</item>
+        <item name="android:windowBackground">@color/fundo</item>
+    </style>
+
+    <style name="Theme.MurupiComandas" parent="Base.Theme.MurupiComandas" />
+</resources>

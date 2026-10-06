@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margem_linha_produto">4dp</dimen>
+    <!-- Variantes de um grupo (ex.: 300ml dentro de Graviola) ficam recuadas. -->
+    <dimen name="recuo_variante">28dp</dimen>
+</resources>
