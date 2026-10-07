@@ -28,6 +28,21 @@ interface CategoriaDao {
     @Query("SELECT * FROM categorias")
     suspend fun listarTodas(): List<Categoria>
 
+    @Query("SELECT COUNT(*) FROM produtos WHERE categoriaId = :categoriaId")
+    suspend fun contarProdutos(categoriaId: Long): Int
+
+    @Query("SELECT MAX(ordem) FROM categorias")
+    suspend fun maiorOrdem(): Int?
+
     @Update
     suspend fun atualizar(categoria: Categoria)
+
+    @Query("DELETE FROM categorias WHERE id = :id AND nome NOT IN (:protegidas)")
+    suspend fun excluir(id: Long, protegidas: List<String>)
+
+    @Query("DELETE FROM categorias WHERE nome NOT IN (:protegidas) AND NOT EXISTS (SELECT 1 FROM produtos WHERE produtos.categoriaId = categorias.id)")
+    suspend fun excluirVazias(protegidas: List<String>): Int
+
+    @Query("SELECT COUNT(*) FROM categorias WHERE nome NOT IN (:protegidas) AND NOT EXISTS (SELECT 1 FROM produtos WHERE produtos.categoriaId = categorias.id)")
+    suspend fun contarVazias(protegidas: List<String>): Int
 }

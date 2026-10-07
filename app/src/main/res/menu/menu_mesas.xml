@@ -15,6 +15,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_config"
+        android:title="@string/configuracoes"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_historico"
         android:title="@string/historico"
         app:showAsAction="never" />

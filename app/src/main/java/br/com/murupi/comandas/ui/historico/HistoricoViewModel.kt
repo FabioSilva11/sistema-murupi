@@ -49,4 +49,8 @@ class HistoricoViewModel(
             )
         }
     }
+
+    fun excluir(comandaId: Long) {
+        viewModelScope.launch { repo.excluirComanda(comandaId) }
+    }
 }

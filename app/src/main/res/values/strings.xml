@@ -16,6 +16,8 @@
     <string name="titulo_historico">Histórico de vendas</string>
     <string name="historico">Histórico</string>
     <string name="historico_vazio">Nenhuma conta fechada ainda.</string>
+    <string name="excluir_venda_historico">Excluir venda do histórico</string>
+    <string name="excluir_venda_historico_pergunta">Excluir permanentemente a venda %1$s? Esta ação também remove os itens da conta.</string>
     <string name="imprimir_historico">Imprimir histórico</string>
     <string name="escolher_impressora">Escolha a impressora</string>
     <string name="sem_impressora_historico">Cadastre uma impressora ativa primeiro.</string>
@@ -48,6 +50,11 @@
     <string name="legenda_ocupadas">Ocupadas: %1$d</string>
     <string name="mesa_livre">Livre</string>
     <string name="mesa_n">Mesa %1$d</string>
+    <string name="escolha_comanda_titulo">Mesa %1$d · comandas</string>
+    <string name="escolha_comanda_titulo_curto">Comandas</string>
+    <string name="escolha_comanda_mensagem">Toque numa comanda aberta para continuar ou abra outra.</string>
+    <string name="conta_fechada_no_historico">Esta conta foi fechada. Consulte o Histórico de vendas.</string>
+    <string name="conta_fechada_reabrivel">Fechada · toque para conferir e reabrir</string>
     <string name="mesa_info_varias">%1$s\n%2$d comandas</string>
     <string name="opcao_comanda">Comanda %1$s — %2$s</string>
     <string name="opcao_nova_comanda">+ Nova comanda %1$s</string>
@@ -99,6 +106,16 @@
     <string name="manter_separada">Manter separada (nova comanda)</string>
     <string name="comanda_transferida">Comanda transferida para a mesa %1$d.</string>
     <string name="pagamento_comanda">Pagamento — %1$s</string>
+    <string name="titulo_fechamento_conta">Fechar Conta</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="desconto">Desconto</string>
+    <string name="desconto_opcional">Desconto (R$)</string>
+    <string name="restante_a_pagar">Restante a pagar</string>
+    <string name="total_pago">Total pago</string>
+    <string name="adicionar_pagamento">Adicionar pagamento</string>
+    <string name="pagamentos_registrados">Pagamentos registrados</string>
+    <string name="nenhum_pagamento_adicionado">Nenhum pagamento adicionado ainda.</string>
+    <string name="remover_pagamento">Remover</string>
     <string name="total_a_pagar">Total a pagar</string>
     <string name="valor_por_pessoa">%1$d pessoas: %2$s cada</string>
     <string name="forma_pagamento">Forma de pagamento</string>
@@ -111,6 +128,8 @@
     <string name="valor_insuficiente">Valor menor que o total.</string>
     <string name="troco">Troco: %1$s</string>
     <string name="confirmar_pagamento">Confirmar pagamento</string>
+    <string name="finalizar_fechar_conta">Fechar Conta e Liberar Mesa</string>
+    <string name="pagamento_incompleto">O total pago precisa cobrir o valor da conta.</string>
     <string name="liberar_sem_consumo">A comanda não tem itens. Cancelar a comanda e liberar a mesa?</string>
     <string name="liberar_mesa">Liberar mesa</string>
     <string name="cancelar_sem_consumo">A comanda não tem itens. Cancelar a comanda?</string>
@@ -170,6 +189,7 @@
     <string name="informe_quantidade">Informe a quantidade (0 ou mais).</string>
     <string name="disponivel_venda">Disponível para venda</string>
     <string name="oculto">Oculto</string>
+    <string name="sem_preco">Preço a definir</string>
     <string name="produto_salvo">\"%1$s\" salvo.</string>
     <string name="produto_excluido">\"%1$s\" excluído.</string>
     <string name="estoque_n">%1$d em estoque</string>
@@ -232,6 +252,56 @@
 
     <!-- Roteamento -->
     <string name="roteamento_categorias">Roteamento de categorias</string>
+
+    <!-- Categorias (gestão) -->
+    <string name="titulo_categorias">Categorias</string>
+    <string name="gerenciar_categorias">Gerenciar categorias</string>
+    <string name="categorias_vazio">Nenhuma categoria.\nToque em + para criar.</string>
+    <plurals name="produtos_categoria">
+        <item quantity="zero">Categoria vazia</item>
+        <item quantity="one">1 produto</item>
+        <item quantity="other">%1$d produtos</item>
+    </plurals>
+    <string name="excluir_categorias_vazias">Excluir categorias vazias</string>
+    <string name="sem_categorias_vazias">Não há categorias vazias para excluir.</string>
+    <string name="categorias_vazias_excluidas">%1$d categorias vazias excluídas.</string>
+    <plurals name="confirmar_excluir_categorias_vazias">
+        <item quantity="one">Excluir a categoria vazia? Nenhum produto será removido.</item>
+        <item quantity="other">Excluir as %1$d categorias vazias? Nenhum produto será removido.</item>
+    </plurals>
+    <string name="nova_categoria">Nova categoria</string>
+    <string name="editar_categoria">Editar categoria</string>
+    <string name="excluir_categoria">Excluir categoria</string>
+    <string name="nome_categoria">Nome da categoria</string>
+    <string name="cor_categoria">Cor do botão</string>
+    <string name="cor_personalizada_hint">Hex #RRGGBB (ex.: #1565C0)</string>
+    <string name="cor_invalida">Use o formato #RRGGBB.</string>
+    <string name="outra_cor">Outra cor…</string>
+    <string name="setor_producao">Setor de produção</string>
+    <string name="categoria_salva">Categoria \"%1$s\" salva.</string>
+    <string name="categoria_excluida">Categoria \"%1$s\" excluída.</string>
+    <string name="excluir_categoria_pergunta">Excluir \"%1$s\" e os %2$d produtos dela? Itens já lançados nas comandas não mudam.</string>
+    <string name="excluir_categoria_sem_produtos">Excluir \"%1$s\"? Itens já lançados nas comandas não mudam.</string>
+
+    <!-- Configurações -->
+    <string name="configuracoes">Configurações</string>
+    <string name="titulo_configuracoes">Configurações do restaurante</string>
+    <string name="nome_restaurante">Nome do restaurante</string>
+    <string name="nome_restaurante_ajuda">Aparece no topo dos tickets impressos.</string>
+    <string name="agradecimento">Mensagem de agradecimento</string>
+    <string name="agradecimento_ajuda">Aparece no fim da conferência de conta.</string>
+    <string name="total_mesas">Total de mesas</string>
+    <string name="total_mesas_ajuda">Grade de mesas do salão (1 a 200).</string>
+    <string name="taxa_servico">Taxa de serviço (%)</string>
+    <string name="taxa_servico_ajuda">Sugerida no pagamento (0 desativa). O valor é sempre confirmável na hora.</string>
+    <string name="config_salva">Configurações salvas.</string>
+    <string name="taxa_invalida">Informe uma taxa de 0 a 50.</string>
+    <string name="informe_nome_restaurante">Informe o nome do restaurante.</string>
+
+    <!-- Pagamento: taxa de serviço -->
+    <string name="taxa_servico_10">Taxa de serviço 10%% (+%1$s)</string>
+    <string name="taxa_configurada">Taxa de serviço %1$d%% (+%2$s)</string>
+    <string name="com_taxa">Com taxa: %1$s</string>
     <string name="roteamento_explicacao">Toque numa categoria para escolher em qual impressora de produção ela sai. Refrigerantes saem na cozinha, abaixo dos pratos.</string>
     <string name="imprime_em">Sai na impressora de</string>
     <string name="setor_cozinha">Cozinha</string>

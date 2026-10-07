@@ -12,7 +12,6 @@ import br.com.murupi.comandas.util.Moeda
 
 class MesaAdapter(
     private val aoTocar: (MesaUi) -> Unit,
-    private val aoSegurar: (MesaUi) -> Unit
 ) : ListAdapter<MesaUi, MesaAdapter.MesaViewHolder>(MesaDiff) {
 
     class MesaViewHolder(val b: ItemMesaBinding) : RecyclerView.ViewHolder(b.root)
@@ -35,10 +34,6 @@ class MesaAdapter(
                 else -> Moeda.formatar(mesa.totalCentavos)
             }
             card.setOnClickListener { aoTocar(mesa) }
-            card.setOnLongClickListener {
-                aoSegurar(mesa)
-                true
-            }
         }
     }
 }

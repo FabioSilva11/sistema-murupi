@@ -215,7 +215,7 @@ class IncluirProdutoActivity : BaseActivity() {
     ) {
         val produto = item.produto
         val b = DialogItemBinding.inflate(layoutInflater)
-        val preco = if (produto.precoLivre) getString(R.string.preco_livre) else Moeda.formatar(produto.precoCentavos)
+        val preco = Moeda.formatar(produto.precoCentavos)
         b.textInfo.text = listOfNotNull(
             getString(R.string.info_produto, item.categoria.nome, preco),
             produto.estoque?.let { getString(R.string.restam_n, it) }

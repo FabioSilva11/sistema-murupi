@@ -178,16 +178,17 @@ object CardapioSeed {
         "Água Tônica" custa LIVRE
     ) + REFRIGERANTES
 
+    private val SOPAS_E_CALDOS = listOf("Mocotó", "Caldo de Pinto", "Feijoada").flatMap { prato ->
+        listOf(10, 15, 20).map { preco ->
+            ProdutoSeed("$prato $preco", reais(preco), grupo = prato)
+        }
+    }
+
     private val CATEGORIAS = listOf(
         CategoriaSeed(
             "BEBIDAS RESTAURANTE", "#3949AB", Setor.REFRIGERANTES,
             produtos = BEBIDAS_RESTAURANTE
         ),
-        CategoriaSeed("DOCES RESTAURANTE", "#AD1457"),
-        CategoriaSeed("GUARANÁS SIMPLES", "#C62828", Setor.SUCOS, produtos = GUARANAS_SIMPLES),
-        CategoriaSeed("GUARANÁS ESPECIAIS", "#AD1457", Setor.SUCOS, produtos = GUARANAS_ESPECIAIS),
-        CategoriaSeed("GUARANÁS SUPER ESPECIAIS", "#6A1B9A", Setor.SUCOS, produtos = GUARANAS_SUPER),
-        CategoriaSeed("HAMBURGUER ARTESANAL", "#6D4C41"),
         CategoriaSeed(
             "ISCAS", "#EF6C00",
             produtos = listOf(
@@ -196,8 +197,6 @@ object CardapioSeed {
                 "Isca Mista" custa reais(20)
             )
         ),
-        CategoriaSeed("MESTRE DO AÇAÍ", "#6A1B9A"),
-        CategoriaSeed("PORÇÕES", "#F9A825"),
         CategoriaSeed(
             "PRATOS MURUPI", "#2E7D32",
             produtos = listOf(
@@ -219,22 +218,9 @@ object CardapioSeed {
                 "Fricassê" custa reais(20)
             )
         ),
-        CategoriaSeed("SALADA DE FRUTAS", "#9CCC65"),
-        CategoriaSeed("SALGADOS", "#FFB300"),
-        CategoriaSeed("SANDUICHES", "#8D6E63"),
-        CategoriaSeed("SOPAS E CALDOS", "#00897B"),
+        CategoriaSeed("SOPAS E CALDOS", "#00897B", produtos = SOPAS_E_CALDOS),
         CategoriaSeed("SUCOS", "#00ACC1", Setor.SUCOS, perguntarOpcoesSuco = true, produtos = SUCOS),
         CategoriaSeed("SUCOS ESPECIAIS", "#0277BD", Setor.SUCOS, produtos = SUCOS_ESPECIAIS),
-        CategoriaSeed("VITAMINAS SIMPLES", "#F06292", Setor.SUCOS, produtos = VITAMINAS_SIMPLES),
-        CategoriaSeed(
-            "VITAMINAS ESPECIAIS", "#EC407A", Setor.SUCOS,
-            produtos = VITAMINAS_ESPECIAIS
-        ),
-        CategoriaSeed(
-            "SUPER VITAMINADAS", "#AD1457", Setor.SUCOS,
-            produtos = SUPER_VITAMINADAS
-        ),
-        CategoriaSeed("TIRA GOSTO", "#D84315"),
         CategoriaSeed(
             "ENTRADAS", "#827717",
             // R$ 1,00 a unidade, mas só vendidos de 5 em 5.
@@ -267,8 +253,17 @@ object CardapioSeed {
                 "Torta de Chocolate" custa LIVRE,
                 "Pudim" custa LIVRE
             )
-        )
+        ),
+        CategoriaSeed("GUARANÁS SIMPLES", "#C62828", Setor.SUCOS, produtos = GUARANAS_SIMPLES),
+        CategoriaSeed("GUARANÁS ESPECIAIS", "#AD1457", Setor.SUCOS, produtos = GUARANAS_ESPECIAIS),
+        CategoriaSeed("GUARANÁS SUPER ESPECIAIS", "#6A1B9A", Setor.SUCOS, produtos = GUARANAS_SUPER),
+        CategoriaSeed("VITAMINAS SIMPLES", "#F06292", Setor.SUCOS, produtos = VITAMINAS_SIMPLES),
+        CategoriaSeed("VITAMINAS ESPECIAIS", "#EC407A", Setor.SUCOS, produtos = VITAMINAS_ESPECIAIS),
+        CategoriaSeed("SUPER VITAMINADAS", "#AD1457", Setor.SUCOS, produtos = SUPER_VITAMINADAS)
     )
+
+    /** Categorias base exibidas no lançamento: podem ser editadas, mas não removidas. */
+    val categoriasProtegidas: List<String> get() = CATEGORIAS.map { it.nome }
 
     /** Categorias extintas: removidas do seed e apagadas de bancos já instalados. */
     private val CATEGORIAS_REMOVIDAS = listOf(
@@ -287,7 +282,7 @@ object CardapioSeed {
         CATEGORIAS.forEach { seed ->
             when (seed.nome) {
                 "BEBIDAS RESTAURANTE",
-                "SUCOS", "SUCOS ESPECIAIS",
+                "SUCOS", "SUCOS ESPECIAIS", "SOPAS E CALDOS",
                 "GUARANÁS SIMPLES", "GUARANÁS ESPECIAIS", "GUARANÁS SUPER ESPECIAIS",
                 "VITAMINAS SIMPLES", "VITAMINAS ESPECIAIS", "SUPER VITAMINADAS" -> mapa[seed.nome] = seed
             }

@@ -35,7 +35,7 @@ class CatalogoAdapter(
                 produto.descricao.takeIf { it.isNotBlank() },
                 item.categoria.nome,
                 produto.grupo?.let { contexto.getString(R.string.grupo_valor, it) },
-                if (produto.precoLivre) contexto.getString(R.string.preco_livre) else Moeda.formatar(produto.precoCentavos),
+                Moeda.formatar(produto.precoCentavos).takeIf { produto.precoCentavos > 0 },
                 contexto.getString(R.string.de_n_em_n, produto.multiplo).takeIf { produto.multiplo > 1 }
             ).joinToString(" · ")
 
@@ -49,6 +49,7 @@ class CatalogoAdapter(
                 ContextCompat.getColor(contexto, if (produto.esgotado) R.color.observacao else R.color.texto_secundario)
             )
             textOculto.isVisible = !produto.ativo
+            textSemPreco.isVisible = produto.precoCentavos <= 0
             root.alpha = if (produto.ativo) 1f else 0.6f
             root.setOnClickListener { aoTocar(item) }
         }

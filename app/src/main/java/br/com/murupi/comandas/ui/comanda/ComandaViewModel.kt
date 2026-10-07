@@ -82,8 +82,7 @@ class ComandaViewModel(
             try {
                 val comanda = repo.comanda(comandaId) ?: return@launch
                 val resultado = impressao.imprimirEspelho(comanda, repo.itens(comandaId))
-                // Espelho impresso fecha a conta e libera a mesa na hora.
-                if (resultado.sucesso) repo.fecharContaImpressa(comandaId)
+                // Espelho é apenas conferência e NÃO fecha a conta. O fechamento é feito na tela de pagamento.
                 _eventos.send(ComandaEvento.Impressao(R.string.imprimir_espelho, resultado))
             } finally {
                 _imprimindo.value = false
@@ -187,7 +186,6 @@ class ComandaViewModel(
         }
     }
 
-    /** Reabre a conta fechada para lançar mais itens (só os novos vão para a produção). */
     fun reabrirComanda() {
         viewModelScope.launch {
             val titulo = estado.value.comanda?.titulo.orEmpty()

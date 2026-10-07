@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.com.murupi.comandas.data.model.ComandaResumo
+import br.com.murupi.comandas.data.model.StatusComanda
 import br.com.murupi.comandas.data.model.titulo
 import br.com.murupi.comandas.databinding.ItemResumoComandaBinding
 import br.com.murupi.comandas.util.Moeda
@@ -14,7 +15,8 @@ import br.com.murupi.comandas.util.Moeda
 /** Lista de comandas de balcão/delivery: título, detalhe (nome/endereço) e total. */
 class ResumoComandaAdapter(
     private val detalhe: (ComandaResumo) -> String,
-    private val aoTocar: (ComandaResumo) -> Unit
+    private val aoTocar: (ComandaResumo) -> Unit,
+    private val aoPressionar: ((ComandaResumo) -> Unit)? = null
 ) : ListAdapter<ComandaResumo, ResumoComandaAdapter.ResumoViewHolder>(ResumoDiff) {
 
     class ResumoViewHolder(val b: ItemResumoComandaBinding) : RecyclerView.ViewHolder(b.root)
@@ -27,10 +29,25 @@ class ResumoComandaAdapter(
         val textoDetalhe = detalhe(resumo)
         with(holder.b) {
             textTitulo.text = resumo.comanda.titulo
+            val fechada = resumo.comanda.status == StatusComanda.FECHADA
             textDetalhe.isVisible = textoDetalhe.isNotEmpty()
-            textDetalhe.text = textoDetalhe
+            textDetalhe.text = if (fechada) {
+                listOf(textoDetalhe.takeIf(String::isNotEmpty), root.context.getString(br.com.murupi.comandas.R.string.conta_fechada_reabrivel))
+                    .filterNotNull().joinToString(" · ")
+            } else textoDetalhe
+            textDetalhe.setTextColor(
+                androidx.core.content.ContextCompat.getColor(
+                    root.context,
+                    if (fechada) br.com.murupi.comandas.R.color.observacao else br.com.murupi.comandas.R.color.texto_secundario
+                )
+            )
+            textDetalhe.isVisible = textDetalhe.text.isNotEmpty()
             textTotal.text = Moeda.formatar(resumo.totalCentavos)
             root.setOnClickListener { aoTocar(resumo) }
+            root.setOnLongClickListener {
+                aoPressionar?.invoke(resumo)
+                aoPressionar != null
+            }
         }
     }
 }

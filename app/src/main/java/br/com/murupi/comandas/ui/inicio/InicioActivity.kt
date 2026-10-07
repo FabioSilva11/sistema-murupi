@@ -11,7 +11,9 @@ import br.com.murupi.comandas.R
 import br.com.murupi.comandas.databinding.ActivityInicioBinding
 import br.com.murupi.comandas.ui.catalogo.CatalogoActivity
 import br.com.murupi.comandas.ui.common.BaseActivity
+import br.com.murupi.comandas.ui.common.aplicarInsets
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
+import br.com.murupi.comandas.ui.config.ConfigActivity
 import br.com.murupi.comandas.ui.impressora.ImpressorasActivity
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -30,6 +32,7 @@ class InicioActivity : BaseActivity() {
 
         binding.pager.adapter = AbasAdapter(this)
         binding.pager.offscreenPageLimit = 2
+        binding.pager.aplicarInsets(base = true)
         TabLayoutMediator(binding.abas, binding.pager) { aba, posicao ->
             aba.setText(
                 when (posicao) {
@@ -62,6 +65,10 @@ class InicioActivity : BaseActivity() {
         }
         R.id.action_historico -> {
             startActivity(Intent(this, br.com.murupi.comandas.ui.historico.HistoricoActivity::class.java))
+            true
+        }
+        R.id.action_config -> {
+            startActivity(Intent(this, ConfigActivity::class.java))
             true
         }
         R.id.action_sobre -> {

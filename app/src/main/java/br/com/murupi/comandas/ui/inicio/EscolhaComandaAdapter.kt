@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.ComandaResumo
 import br.com.murupi.comandas.data.model.StatusComanda
@@ -17,7 +16,6 @@ import br.com.murupi.comandas.util.Moeda
 /** Opções do diálogo ao tocar numa mesa ocupada: as comandas abertas e abrir outra. */
 sealed interface OpcaoComanda {
     data class Existente(val resumo: ComandaResumo) : OpcaoComanda
-    data class Nova(val numero: String) : OpcaoComanda
 }
 
 class EscolhaComandaAdapter(context: Context, opcoes: List<OpcaoComanda>) :
@@ -34,31 +32,19 @@ class EscolhaComandaAdapter(context: Context, opcoes: List<OpcaoComanda>) :
                 b.root.setBackgroundColor(
                     ContextCompat.getColor(
                         context,
-                        if (fechada) R.color.fechada_fundo else android.R.color.transparent
+                        if (fechada) R.color.fechada_fundo else R.color.comanda_aberta_fundo
                     )
                 )
-                b.textTitulo.text = context.getString(R.string.opcao_comanda_titulo, resumo.comanda.numero)
+                b.textTitulo.text = resumo.comanda.sequencia.toString()
                 b.textTitulo.setTextColor(
                     ContextCompat.getColor(
                         context,
                         if (fechada) R.color.observacao else R.color.texto_primario
                     )
                 )
-                b.textSubtitulo.text = if (fechada) {
-                    context.getString(R.string.conta_fechada)
-                } else {
-                    context.resources.getQuantityString(
-                        R.plurals.itens, resumo.qtdItens, resumo.qtdItens
-                    )
-                }
-                b.textTotal.isVisible = true
-                b.textTotal.text = Moeda.formatar(resumo.totalCentavos)
-            }
-            is OpcaoComanda.Nova -> {
-                b.textTitulo.text = context.getString(R.string.opcao_nova_comanda_titulo, opcao.numero)
-                b.textTitulo.setTextColor(ContextCompat.getColor(context, R.color.murupi_blue_escuro))
-                b.textSubtitulo.text = context.getString(R.string.opcao_nova_comanda_subtitulo)
-                b.textTotal.isVisible = false
+                b.textSubtitulo.text = if (fechada) context.getString(R.string.conta_fechada)
+                else context.resources.getQuantityString(R.plurals.itens, resumo.qtdItens, resumo.qtdItens)
+                b.textSubtitulo.append(" · ${Moeda.formatar(resumo.totalCentavos)}")
             }
             null -> Unit
         }

@@ -97,7 +97,7 @@ class LinhasProdutoAdapter(
             ).joinToString(" · ")
             textDetalhe.isVisible = detalhe.isNotEmpty()
             textDetalhe.text = detalhe
-            textPreco.text = if (produto.precoLivre) contexto.getString(R.string.preco_livre) else Moeda.formatar(produto.precoCentavos)
+            textPreco.text = Moeda.formatar(produto.precoCentavos)
 
             val estoque = produto.estoque
             textEstoque.isVisible = estoque != null

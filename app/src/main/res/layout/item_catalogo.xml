@@ -69,6 +69,18 @@
             android:textSize="11sp"
             android:visibility="gone"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textSemPreco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/sem_preco"
+            android:textColor="@color/pendente"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 
 </LinearLayout>

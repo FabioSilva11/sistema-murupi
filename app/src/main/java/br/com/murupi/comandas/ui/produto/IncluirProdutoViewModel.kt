@@ -32,6 +32,9 @@ sealed interface TelaProdutos {
     data class Busca(val termo: String, val linhas: List<LinhaProduto>) : TelaProdutos
 }
 
+/** Todas as categorias cadastradas ficam disponíveis, inclusive antes de receberem produtos. */
+fun categoriasParaLancamento(categorias: List<Categoria>): List<Categoria> = categorias
+
 private data class Navegacao(
     val categoriaId: Long?,
     val termo: String,
@@ -93,9 +96,8 @@ class IncluirProdutoViewModel(
                 )
             )
             else -> {
-                // Categorias sem nenhum produto disponível ficam ocultas.
-                val comProdutos = itens.map { it.categoria.id }.toSet()
-                TelaProdutos.Categorias(cats.filter { it.id in comProdutos })
+                // Categorias sem produto ativo ficam ocultas no lançamento.
+                TelaProdutos.Categorias(categoriasParaLancamento(cats))
             }
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TelaProdutos.Categorias(emptyList()))

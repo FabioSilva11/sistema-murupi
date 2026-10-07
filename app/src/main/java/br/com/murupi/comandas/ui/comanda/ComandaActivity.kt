@@ -135,7 +135,7 @@ class ComandaActivity : BaseActivity() {
         menu.findItem(R.id.action_imprimir_producao)?.isVisible = !somenteLeitura
         menu.findItem(R.id.action_pagamento)?.isVisible = !somenteLeitura
         menu.findItem(R.id.action_pessoas)?.isVisible = !somenteLeitura
-        menu.findItem(R.id.action_reabrir)?.isVisible = somenteLeitura
+        menu.findItem(R.id.action_reabrir)?.isVisible = somenteLeitura && comanda?.formaPagamento == null
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -369,63 +369,7 @@ class ComandaActivity : BaseActivity() {
             return
         }
 
-        val total = estado.totalCentavos
-        val b = DialogPagamentoBinding.inflate(layoutInflater)
-        b.textTotal.text = Moeda.formatar(total)
-        b.textPorPessoa.isVisible = comanda.pessoas > 1
-        b.textPorPessoa.text =
-            getString(R.string.valor_por_pessoa, comanda.pessoas, Moeda.formatar(Moeda.dividir(total, comanda.pessoas)))
-        b.textAvisoPendentes.isVisible = estado.pendentes > 0
-        b.textAvisoPendentes.text =
-            resources.getQuantityString(R.plurals.aviso_pendentes_pagamento, estado.pendentes, estado.pendentes)
-
-        fun atualizarTroco() {
-            val dinheiro = b.grupoForma.checkedChipId == R.id.chipDinheiro
-            b.layoutRecebido.isVisible = dinheiro
-            val recebido = Moeda.converter(b.editRecebido.text?.toString().orEmpty())
-            b.textTroco.isVisible = dinheiro && recebido != null && recebido >= total
-            if (recebido != null) b.textTroco.text = getString(R.string.troco, Moeda.formatar(recebido - total))
-        }
-        b.grupoForma.setOnCheckedStateChangeListener { _, _ ->
-            b.textErroForma.isVisible = false
-            atualizarTroco()
-        }
-        b.editRecebido.doAfterTextChanged {
-            b.layoutRecebido.error = null
-            atualizarTroco()
-        }
-        atualizarTroco()
-
-        val dialogo = MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.pagamento_comanda, comanda.tituloBarra(this)))
-            .setView(b.root)
-            .setNegativeButton(R.string.cancelar, null)
-            .setPositiveButton(R.string.confirmar_pagamento, null)
-            .create()
-        dialogo.aoConfirmar {
-            val forma = when (b.grupoForma.checkedChipId) {
-                R.id.chipDinheiro -> FormaPagamento.DINHEIRO
-                R.id.chipDebito -> FormaPagamento.DEBITO
-                R.id.chipCredito -> FormaPagamento.CREDITO
-                R.id.chipPix -> FormaPagamento.PIX
-                else -> null
-            }
-            if (forma == null) {
-                b.textErroForma.isVisible = true
-                return@aoConfirmar false
-            }
-            val textoRecebido = b.editRecebido.text?.toString().orEmpty()
-            if (forma == FormaPagamento.DINHEIRO && textoRecebido.isNotBlank()) {
-                val recebido = Moeda.converter(textoRecebido)
-                if (recebido == null || recebido < total) {
-                    b.layoutRecebido.error = getString(R.string.valor_insuficiente)
-                    return@aoConfirmar false
-                }
-            }
-            viewModel.fecharComanda(forma, total)
-            true
-        }
-        dialogo.show()
+        startActivity(FechamentoContaActivity.intentPara(this, comanda.id))
     }
 
     companion object {

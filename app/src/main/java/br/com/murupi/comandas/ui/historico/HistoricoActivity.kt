@@ -15,6 +15,7 @@ import br.com.murupi.comandas.ui.common.aplicarInsets
 import br.com.murupi.comandas.ui.common.coletar
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
 import br.com.murupi.comandas.ui.inicio.ResumoComandaAdapter
+import br.com.murupi.comandas.data.model.titulo
 import br.com.murupi.comandas.util.DataHora
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -31,7 +32,8 @@ class HistoricoActivity : BaseActivity() {
                 resumo.comanda.fechadaEm?.let { DataHora.completa(it) }
             ).joinToString(" · ")
         },
-        aoTocar = { startActivity(ComandaActivity.intentPara(this, it.comanda.id)) }
+        aoTocar = { startActivity(ComandaActivity.intentPara(this, it.comanda.id)) },
+        aoPressionar = { resumo -> confirmarExclusao(resumo.comanda.id, resumo.comanda.titulo) }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,5 +91,14 @@ class HistoricoActivity : BaseActivity() {
                 .setNegativeButton(R.string.cancelar, null)
                 .show()
         }
+    }
+
+    private fun confirmarExclusao(comandaId: Long, titulo: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.excluir_venda_historico)
+            .setMessage(getString(R.string.excluir_venda_historico_pergunta, titulo))
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.excluir) { _, _ -> viewModel.excluir(comandaId) }
+            .show()
     }
 }

@@ -9,6 +9,7 @@ import br.com.murupi.comandas.data.model.TipoComanda
 import br.com.murupi.comandas.data.repo.ComandaRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -28,12 +29,12 @@ class InicioViewModel(private val repo: ComandaRepository) : ViewModel() {
     /** Garante que a limpeza de comandas vazias nunca apague uma comanda recém-aberta. */
     private val mutex = Mutex()
 
-    val mesas: StateFlow<List<MesaUi>> = repo.comandasAbertas()
-        .map { abertas ->
+    val mesas: StateFlow<List<MesaUi>> =
+        combine(repo.comandasAbertas(), Restaurante.config) { abertas, config ->
             val porMesa = abertas
                 .filter { it.comanda.tipo == TipoComanda.MESA }
                 .groupBy { it.comanda.mesa }
-            (1..Restaurante.TOTAL_MESAS).map { MesaUi(it, porMesa[it].orEmpty()) }
+            (1..config.totalMesas).map { MesaUi(it, porMesa[it].orEmpty()) }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
@@ -45,7 +46,6 @@ class InicioViewModel(private val repo: ComandaRepository) : ViewModel() {
 
     suspend fun abrirNovaComanda(mesa: Int): Comanda = mutex.withLock { repo.abrirNovaComanda(mesa) }
 
-    /** Últimas contas fechadas da mesa, para o diálogo mostrar em vermelho. */
     suspend fun fechadasDaMesa(mesa: Int): List<ComandaResumo> = repo.resumosFechadasDaMesa(mesa)
 
     suspend fun abrirAvulsa(tipo: TipoComanda, nomeCliente: String, endereco: String): Comanda =

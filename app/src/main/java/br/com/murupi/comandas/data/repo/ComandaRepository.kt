@@ -172,6 +172,7 @@ class ComandaRepository(private val db: AppDatabase) {
     /** Registra o pagamento e fecha a comanda; a mesa fica livre quando não houver outra aberta. */
     suspend fun fecharComanda(comandaId: Long, forma: FormaPagamento, totalCentavos: Long) {
         val comanda = comandaDao.buscar(comandaId) ?: return
+        if (comanda.status != StatusComanda.ABERTA) return
         comandaDao.atualizar(
             comanda.copy(
                 status = StatusComanda.FECHADA,
@@ -186,20 +187,12 @@ class ComandaRepository(private val db: AppDatabase) {
         comandaDao.buscar(comandaId)?.let { comandaDao.excluir(it) }
     }
 
-    /**
-     * Reabre uma conta fechada para lançar mais itens. A produção imprime só os
-     * itens novos (pendentes) e o próximo espelho sai completo e atualizado.
-     */
+    /** Reabre uma conta encerrada apenas para conferência; baixa paga não pode voltar à mesa. */
     suspend fun reabrirComanda(comandaId: Long) = db.withTransaction {
         val comanda = comandaDao.buscar(comandaId) ?: return@withTransaction
-        if (comanda.status != StatusComanda.FECHADA) return@withTransaction
+        if (comanda.status != StatusComanda.FECHADA || comanda.formaPagamento != null) return@withTransaction
         comandaDao.atualizar(
-            comanda.copy(
-                status = StatusComanda.ABERTA,
-                fechadaEm = null,
-                formaPagamento = null,
-                totalPagoCentavos = null
-            )
+            comanda.copy(status = StatusComanda.ABERTA, fechadaEm = null, totalPagoCentavos = null)
         )
     }
 

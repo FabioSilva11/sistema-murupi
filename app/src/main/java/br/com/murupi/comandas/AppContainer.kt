@@ -1,9 +1,12 @@
 package br.com.murupi.comandas
 
 import android.content.Context
+import br.com.murupi.comandas.data.Restaurante
 import br.com.murupi.comandas.data.db.AppDatabase
+import br.com.murupi.comandas.data.model.ConfigRestaurante
 import br.com.murupi.comandas.data.repo.CardapioRepository
 import br.com.murupi.comandas.data.repo.ComandaRepository
+import br.com.murupi.comandas.data.repo.ConfigRepository
 import br.com.murupi.comandas.data.repo.ImpressoraRepository
 import br.com.murupi.comandas.data.seed.CardapioSeed
 import br.com.murupi.comandas.print.DescobertaImpressoras
@@ -24,8 +27,13 @@ class AppContainer(context: Context) {
     val impressoras = ImpressoraRepository(database.impressoraDao())
     val impressao = ServicoImpressao(database.impressoraDao(), database.itemComandaDao())
     val descoberta = DescobertaImpressoras(context.applicationContext)
+    val config = ConfigRepository(database)
 
     init {
-        escopo.launch { CardapioSeed.popularSeVazio(database) }
+        escopo.launch {
+            CardapioSeed.popularSeVazio(database)
+            // Configuração salva (ou os padrões) disponível para telas e tickets.
+            Restaurante.aplicar(config.carregar() ?: ConfigRestaurante())
+        }
     }
 }

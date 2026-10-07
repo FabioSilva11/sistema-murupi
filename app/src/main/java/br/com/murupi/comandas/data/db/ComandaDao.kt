@@ -16,7 +16,7 @@ interface ComandaDao {
     @Query(
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
-               COUNT(i.id) AS qtdItens
+               COALESCE(SUM(i.quantidade), 0) AS qtdItens
         FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
         WHERE c.status = 'ABERTA'
         GROUP BY c.id
@@ -28,7 +28,7 @@ interface ComandaDao {
     @Query(
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
-               COUNT(i.id) AS qtdItens
+               COALESCE(SUM(i.quantidade), 0) AS qtdItens
         FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
         WHERE c.status = 'ABERTA' AND c.mesa = :mesa
         GROUP BY c.id
@@ -40,9 +40,9 @@ interface ComandaDao {
     @Query(
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
-               COUNT(i.id) AS qtdItens
+               COALESCE(SUM(i.quantidade), 0) AS qtdItens
         FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
-        WHERE c.status = 'ABERTA' AND c.tipo = :tipo
+        WHERE c.tipo = :tipo AND (c.status = 'ABERTA' OR (c.status = 'FECHADA' AND c.formaPagamento IS NULL))
         GROUP BY c.id
         ORDER BY c.abertaEm, c.id
         """
@@ -68,9 +68,9 @@ interface ComandaDao {
     @Query(
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
-               COUNT(i.id) AS qtdItens
+               COALESCE(SUM(i.quantidade), 0) AS qtdItens
         FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
-        WHERE c.status = 'FECHADA' AND c.tipo = 'MESA' AND c.mesa = :mesa
+        WHERE c.status = 'FECHADA' AND c.formaPagamento IS NULL AND c.tipo = 'MESA' AND c.mesa = :mesa
         GROUP BY c.id
         ORDER BY c.fechadaEm DESC, c.id DESC
         LIMIT :limite
@@ -78,16 +78,15 @@ interface ComandaDao {
     )
     suspend fun resumosFechadasDaMesa(mesa: Int, limite: Int): List<ComandaResumo>
 
-    /** Histórico de vendas: contas fechadas, das mais recentes às mais antigas. */
+    /** Histórico de vendas: todas as contas fechadas, das mais recentes às mais antigas. */
     @Query(
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
-               COUNT(i.id) AS qtdItens
+               COALESCE(SUM(i.quantidade), 0) AS qtdItens
         FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
-        WHERE c.status = 'FECHADA'
+        WHERE c.status = 'FECHADA' AND c.formaPagamento IS NOT NULL
         GROUP BY c.id
         ORDER BY c.fechadaEm DESC, c.id DESC
-        LIMIT 200
         """
     )
     fun observarFechadas(): Flow<List<ComandaResumo>>

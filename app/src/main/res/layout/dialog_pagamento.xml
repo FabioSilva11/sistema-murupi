@@ -49,6 +49,28 @@
             android:textSize="13sp"
             android:visibility="gone" />
 
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchTaxa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/taxa_servico_10"
+            android:visibility="gone"
+            tools:text="Taxa de serviço 10% (+R$ 4,80)"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textTotalComTaxa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/murupi_blue"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Com taxa: R$ 52,80"
+            tools:visibility="visible" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

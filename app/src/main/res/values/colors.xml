@@ -20,4 +20,5 @@
     <color name="aviso_fundo">#FFFFF3E0</color>
     <!-- Linha da conta fechada no diálogo da mesa: vermelho claro. -->
     <color name="fechada_fundo">#FFFFEBEE</color>
+    <color name="comanda_aberta_fundo">#FFE3F2FD</color>
 </resources>

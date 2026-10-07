@@ -20,7 +20,7 @@ class MesasFragment : Fragment() {
 
     private var binding: FragmentMesasBinding? = null
     private val viewModel by viewModelsDaAtividade { InicioViewModel(it.comandas) }
-    private val adapter = MesaAdapter(aoTocar = ::aoTocarMesa, aoSegurar = ::escolherComanda)
+    private val adapter = MesaAdapter(aoTocar = ::aoTocarMesa)
 
     /** Evita abrir duas comandas com toques repetidos enquanto a próxima tela carrega. */
     private var abrindo = false
@@ -54,34 +54,34 @@ class MesasFragment : Fragment() {
     }
 
     private fun aoTocarMesa(mesa: MesaUi) {
-        when (mesa.comandas.size) {
-            1 -> abrirComanda(mesa.comandas.first().comanda.id)
-            // Sem aberta: mostra as últimas fechadas em vermelho, ou abre uma nova direto.
-            0 -> lifecycleScope.launch {
-                if (viewModel.fechadasDaMesa(mesa.numero).isEmpty()) abrirNovaComanda(mesa.numero)
-                else escolherComanda(mesa)
-            }
-            else -> escolherComanda(mesa)
-        }
+        lifecycleScope.launch { escolherComanda(mesa) }
     }
 
-    /** Lista as comandas da mesa (abertas + últimas fechadas em vermelho) e permite abrir outra. */
-    private fun escolherComanda(mesa: MesaUi) {
-        lifecycleScope.launch {
-            val opcoes = mesa.comandas.map { OpcaoComanda.Existente(it) } +
-                viewModel.fechadasDaMesa(mesa.numero).map { OpcaoComanda.Existente(it) } +
-                OpcaoComanda.Nova("${mesa.numero}.${mesa.proximaSequencia}")
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.mesa_n, mesa.numero))
-                .setAdapter(EscolhaComandaAdapter(requireContext(), opcoes)) { _, indice ->
-                    when (val opcao = opcoes[indice]) {
-                        is OpcaoComanda.Existente -> abrirComanda(opcao.resumo.comanda.id)
-                        is OpcaoComanda.Nova -> abrirNovaComanda(mesa.numero)
-                    }
-                }
-                .setNegativeButton(R.string.cancelar, null)
-                .show()
+    /** Seletor com abertas em azul e fechadas em vermelho; '+' cria uma nova comanda. */
+    private suspend fun escolherComanda(mesa: MesaUi) {
+        val abertas = mesa.comandas.map { OpcaoComanda.Existente(it) }
+        val fechadas = viewModel.fechadasDaMesa(mesa.numero).map { OpcaoComanda.Existente(it) }
+        val opcoes = abertas + fechadas
+        val conteudo = layoutInflater.inflate(R.layout.dialog_escolha_comanda, null)
+        conteudo.findViewById<android.widget.TextView>(R.id.tituloComandas)
+            .text = getString(R.string.escolha_comanda_titulo, mesa.numero)
+        val lista = conteudo.findViewById<android.widget.GridView>(R.id.gradeComandas)
+        lista.numColumns = maxOf(1, opcoes.size.coerceAtMost(4))
+        lista.adapter = EscolhaComandaAdapter(requireContext(), opcoes)
+        val dialogo = MaterialAlertDialogBuilder(requireContext())
+            .setView(conteudo)
+            .setNegativeButton(R.string.cancelar, null)
+            .create()
+        lista.setOnItemClickListener { _, _, indice, _ ->
+                val opcao = opcoes[indice] as OpcaoComanda.Existente
+                abrirComanda(opcao.resumo.comanda.id)
+                dialogo.dismiss()
         }
+        conteudo.findViewById<View>(R.id.botaoNovaComanda).setOnClickListener {
+            dialogo.dismiss()
+            abrirNovaComanda(mesa.numero)
+        }
+        dialogo.show()
     }
 
     private fun abrirNovaComanda(mesa: Int) {

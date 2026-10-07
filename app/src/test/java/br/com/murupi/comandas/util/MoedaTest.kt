@@ -20,6 +20,7 @@ class MoedaTest {
         assertEquals(1200L, Moeda.converter("12"))
         assertEquals(1250L, Moeda.converter("12,5"))
         assertEquals(1250L, Moeda.converter("12.50"))
+        assertEquals(123400L, Moeda.converter("1.234"))
         assertEquals(123456L, Moeda.converter("1.234,56"))
         assertEquals(1600L, Moeda.converter("R$ 16,00"))
         assertEquals(0L, Moeda.converter("0"))
@@ -43,5 +44,12 @@ class MoedaTest {
         assertEquals(334L, Moeda.dividir(1000, 3))
         assertEquals(2400L, Moeda.dividir(4800, 2))
         assertEquals(4800L, Moeda.dividir(4800, 0))
+    }
+
+    @Test
+    fun taxa_servico_soma_o_percentual() {
+        assertEquals(528L, Moeda.taxaServico(5280, 10))
+        assertEquals(0L, Moeda.taxaServico(5280, 0))
+        assertEquals(6L, Moeda.taxaServico(63, 10))
     }
 }

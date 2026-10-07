@@ -1,7 +1,9 @@
 package br.com.murupi.comandas.ui.catalogo
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
@@ -12,6 +14,7 @@ import br.com.murupi.comandas.data.model.Categoria
 import br.com.murupi.comandas.data.model.Produto
 import br.com.murupi.comandas.databinding.ActivityCatalogoBinding
 import br.com.murupi.comandas.databinding.DialogProdutoBinding
+import br.com.murupi.comandas.ui.categoria.CategoriasActivity
 import br.com.murupi.comandas.ui.common.BaseActivity
 import br.com.murupi.comandas.ui.common.aoConfirmar
 import br.com.murupi.comandas.ui.common.aplicarInsets
@@ -79,6 +82,14 @@ class CatalogoActivity : BaseActivity() {
             }
         })
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_categorias -> {
+            startActivity(Intent(this, CategoriasActivity::class.java))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     /** Cadastro (produto nulo) ou edição de um produto. */

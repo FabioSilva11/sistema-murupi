@@ -37,6 +37,13 @@
             tools:ignore="LockedOrientationActivity,DiscouragedApi" />
 
         <activity
+            android:name=".ui.comanda.FechamentoContaActivity"
+            android:label="@string/titulo_fechamento_conta"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi" />
+
+        <activity
             android:name=".ui.produto.IncluirProdutoActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
@@ -45,6 +52,20 @@
         <activity
             android:name=".ui.catalogo.CatalogoActivity"
             android:label="@string/titulo_catalogo"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi" />
+
+        <activity
+            android:name=".ui.categoria.CategoriasActivity"
+            android:label="@string/titulo_categorias"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi" />
+
+        <activity
+            android:name=".ui.config.ConfigActivity"
+            android:label="@string/titulo_configuracoes"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity,DiscouragedApi" />

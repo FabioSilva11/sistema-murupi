@@ -8,13 +8,14 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import br.com.murupi.comandas.data.model.Categoria
 import br.com.murupi.comandas.data.model.Comanda
+import br.com.murupi.comandas.data.model.ConfigRestaurante
 import br.com.murupi.comandas.data.model.Impressora
 import br.com.murupi.comandas.data.model.ItemComanda
 import br.com.murupi.comandas.data.model.Produto
 
 @Database(
-    entities = [Categoria::class, Produto::class, Comanda::class, ItemComanda::class, Impressora::class],
-    version = 5,
+    entities = [Categoria::class, Produto::class, Comanda::class, ItemComanda::class, Impressora::class, ConfigRestaurante::class],
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -24,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun comandaDao(): ComandaDao
     abstract fun itemComandaDao(): ItemComandaDao
     abstract fun impressoraDao(): ImpressoraDao
+    abstract fun configDao(): ConfigDao
 
     companion object {
         private const val NOME_ARQUIVO = "murupi.db"
@@ -83,9 +85,33 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Versão 6: configuração do restaurante (nome, agradecimento, total de mesas
+         * e taxa de serviço) numa tabela de linha única, com os padrões antigos.
+         */
+        val MIGRACAO_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS config_restaurante (
+                        id INTEGER NOT NULL PRIMARY KEY,
+                        nome TEXT NOT NULL,
+                        agradecimento TEXT NOT NULL,
+                        totalMesas INTEGER NOT NULL,
+                        taxaServicoPercentual INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    "INSERT INTO config_restaurante (id, nome, agradecimento, totalMesas, taxaServicoPercentual) " +
+                        "VALUES (1, 'MURUPI RESTAURANTE', 'O Restaurante Murupi agradece a preferência.', 60, 0)"
+                )
+            }
+        }
+
         fun criar(context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, NOME_ARQUIVO)
-                .addMigrations(MIGRACAO_1_2, MIGRACAO_2_3, MIGRACAO_3_4, MIGRACAO_4_5)
+                .addMigrations(MIGRACAO_1_2, MIGRACAO_2_3, MIGRACAO_3_4, MIGRACAO_4_5, MIGRACAO_5_6)
                 .build()
     }
 }

@@ -28,8 +28,13 @@ class ItemComandaAdapter(
         with(holder.b) {
             textQuantidade.text = contexto.getString(R.string.quantidade_x, item.quantidade)
             textNome.text = item.nome
+            val precoDescricao = if (item.precoUnitarioCentavos <= 0) {
+                contexto.getString(R.string.preco_livre)
+            } else {
+                Moeda.formatar(item.precoUnitarioCentavos)
+            }
             textDetalhe.text = contexto.getString(
-                R.string.detalhe_item, Moeda.formatar(item.precoUnitarioCentavos), item.categoriaNome
+                R.string.detalhe_item, precoDescricao, item.categoriaNome
             )
             textObservacao.isVisible = item.observacao.isNotEmpty()
             textObservacao.text = contexto.getString(R.string.obs_valor, item.observacao)

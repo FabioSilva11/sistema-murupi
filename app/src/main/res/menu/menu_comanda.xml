@@ -38,4 +38,5 @@
         android:id="@+id/action_reabrir"
         android:title="@string/reabrir_conta"
         app:showAsAction="never" />
+
 </menu>

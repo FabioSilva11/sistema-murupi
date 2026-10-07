@@ -15,14 +15,23 @@ interface ProdutoDao {
     @Query("SELECT * FROM produtos")
     fun observarTodos(): Flow<List<Produto>>
 
+    @Query("SELECT COUNT(*) FROM produtos WHERE categoriaId = :categoriaId")
+    fun observarContagemCategoria(categoriaId: Long): Flow<Int>
+
     @Query("SELECT * FROM produtos WHERE id = :id")
     suspend fun buscar(id: Long): Produto?
+
+    @Query("SELECT * FROM produtos WHERE id IN (:ids)")
+    suspend fun listarPorIds(ids: List<Long>): List<Produto>
 
     @Query("SELECT * FROM produtos WHERE categoriaId = :categoriaId")
     suspend fun listarPorCategoria(categoriaId: Long): List<Produto>
 
     @Query("DELETE FROM produtos WHERE categoriaId = :categoriaId AND nome IN (:nomes)")
     suspend fun excluirPorNomes(categoriaId: Long, nomes: List<String>)
+
+    @Query("DELETE FROM produtos WHERE id IN (:ids)")
+    suspend fun excluirPorIds(ids: List<Long>)
 
     @Query("UPDATE produtos SET descricao = :descricao WHERE categoriaId = :categoriaId AND grupo = :grupo AND (descricao IS NULL OR descricao = '')")
     suspend fun preencherDescricaoVazia(categoriaId: Long, grupo: String, descricao: String)
