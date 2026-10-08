@@ -11,11 +11,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ItemComandaDao {
 
-    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId ORDER BY criadoEm, id")
+    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId AND cancelado = 0 ORDER BY criadoEm, id")
     fun observarDaComanda(comandaId: Long): Flow<List<ItemComanda>>
 
-    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId ORDER BY criadoEm, id")
+    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId AND cancelado = 0 ORDER BY criadoEm, id")
     suspend fun listarDaComanda(comandaId: Long): List<ItemComanda>
+
+    @Query("SELECT * FROM itens_comanda WHERE comandaId IN (:comandaIds) AND cancelado = 0 ORDER BY comandaId, criadoEm, id")
+    suspend fun listarDasComandas(comandaIds: List<Long>): List<ItemComanda>
+
+    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId AND cancelamentoPendenteImpressao = 1 ORDER BY canceladoEm, id")
+    fun observarCancelamentosPendentes(comandaId: Long): Flow<List<ItemComanda>>
+
+    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId AND cancelamentoPendenteImpressao = 1 ORDER BY canceladoEm, id")
+    suspend fun listarCancelamentosPendentes(comandaId: Long): List<ItemComanda>
+
+    @Query("SELECT * FROM itens_comanda WHERE comandaId = :comandaId ORDER BY criadoEm, id")
+    suspend fun listarTodosDaComanda(comandaId: Long): List<ItemComanda>
 
     @Query("SELECT * FROM itens_comanda WHERE id = :id")
     suspend fun buscar(id: Long): ItemComanda?
@@ -24,7 +36,7 @@ interface ItemComandaDao {
     @Query(
         """
         SELECT * FROM itens_comanda
-        WHERE comandaId = :comandaId AND produtoId = :produtoId AND precoUnitarioCentavos = :precoCentavos
+        WHERE comandaId = :comandaId AND cancelado = 0 AND produtoId = :produtoId AND precoUnitarioCentavos = :precoCentavos
           AND observacao = :observacao AND enviadoProducao = 0
         LIMIT 1
         """
@@ -43,6 +55,12 @@ interface ItemComandaDao {
     @Query("UPDATE itens_comanda SET enviadoProducao = 1 WHERE id IN (:ids)")
     suspend fun marcarEnviados(ids: List<Long>)
 
+    @Query("UPDATE itens_comanda SET cancelamentoPendenteImpressao = 0 WHERE id IN (:ids)")
+    suspend fun marcarCancelamentosImpressos(ids: List<Long>)
+
     @Query("UPDATE itens_comanda SET comandaId = :destino WHERE comandaId = :origem")
     suspend fun moverItens(origem: Long, destino: Long)
+
+    @Query("DELETE FROM itens_comanda")
+    suspend fun excluirTodos(): Int
 }

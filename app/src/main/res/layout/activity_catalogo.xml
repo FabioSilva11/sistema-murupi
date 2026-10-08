@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
         android:hint="@string/categoria">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -39,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingHorizontal="4dp"
             android:paddingTop="4dp"
             android:paddingBottom="88dp"
             tools:listitem="@layout/item_catalogo" />
@@ -50,6 +52,9 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="24dp"
+            android:drawableTop="@drawable/ic_catalogo"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/murupi_blue"
             android:text="@string/catalogo_vazio"
             android:textColor="@color/texto_secundario"
             android:textSize="16sp"

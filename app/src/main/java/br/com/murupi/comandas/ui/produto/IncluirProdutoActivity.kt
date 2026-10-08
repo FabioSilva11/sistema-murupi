@@ -6,6 +6,10 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -17,6 +21,7 @@ import br.com.murupi.comandas.data.model.ProdutoItem
 import br.com.murupi.comandas.data.model.esgotado
 import br.com.murupi.comandas.data.model.numero
 import br.com.murupi.comandas.data.model.precoLivre
+import br.com.murupi.comandas.data.model.rotuloNoGrupo
 import br.com.murupi.comandas.databinding.ActivityIncluirProdutoBinding
 import br.com.murupi.comandas.databinding.DialogItemBinding
 import br.com.murupi.comandas.ui.catalogo.CatalogoActivity
@@ -30,6 +35,9 @@ import br.com.murupi.comandas.ui.common.tituloBarra
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
 import br.com.murupi.comandas.util.Moeda
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
 /**
@@ -44,7 +52,7 @@ class IncluirProdutoActivity : BaseActivity() {
 
     private val categoriasAdapter = CategoriaAdapter { viewModel.abrirCategoria(it) }
     private val linhasAdapter = LinhasProdutoAdapter(
-        aoTocarGrupo = { viewModel.alternarGrupo(it.chave) },
+        aoTocarGrupo = ::abrirGrupo,
         aoTocarItem = ::aoTocarItem,
         aoEscolherPreparo = ::aoEscolherPreparo
     )
@@ -192,6 +200,16 @@ class IncluirProdutoActivity : BaseActivity() {
         }
     }
 
+    /** Grupo com tamanhos/sabores abre um painel inferior com opções, quantidade e observação. */
+    private fun abrirGrupo(grupo: LinhaProduto.Grupo) {
+        val disponiveis = grupo.opcoes.filterNot { it.produto.esgotado }
+        if (disponiveis.isEmpty()) {
+            avisar(R.string.produto_esgotado, grupo.nome)
+            return
+        }
+        lancarProduto(disponiveis.first(), variantes = grupo.opcoes)
+    }
+
     /** Toque numa opção de preparo: abre a janela de lançamento com a opção já preenchida. */
     private fun aoEscolherPreparo(item: ProdutoItem, preparo: String) {
         if (preparo != FormularioItem.OPCAO_OUTRO) {
@@ -211,38 +229,123 @@ class IncluirProdutoActivity : BaseActivity() {
         item: ProdutoItem,
         observacaoInicial: String = "",
         perguntarOpcoesSuco: Boolean = item.categoria.perguntarOpcoesSuco &&
-            FormularioItem.exigeOpcaoLeite(item.produto.nome, item.produto.grupo)
+            FormularioItem.exigeOpcaoLeite(item.produto.nome, item.produto.grupo),
+        variantes: List<ProdutoItem> = emptyList()
     ) {
         val produto = item.produto
         val b = DialogItemBinding.inflate(layoutInflater)
-        val preco = Moeda.formatar(produto.precoCentavos)
-        b.textInfo.text = listOfNotNull(
-            getString(R.string.info_produto, item.categoria.nome, preco),
-            produto.estoque?.let { getString(R.string.restam_n, it) }
-        ).joinToString(" · ")
-        val formulario = FormularioItem(
-            b,
-            quantidadeInicial = 1,
-            precoCentavos = produto.precoCentavos,
-            precoEditavel = produto.precoLivre,
-            observacaoInicial = observacaoInicial,
-            perguntarOpcoesSuco = perguntarOpcoesSuco,
-            quantidadeMaxima = produto.estoque ?: FormularioItem.QUANTIDADE_MAXIMA,
-            passo = produto.multiplo
-        )
-        val dialogo = MaterialAlertDialogBuilder(this)
-            .setTitle(produto.nome)
-            .setView(b.root)
-            .setPositiveButton(R.string.adicionar, null)
-            .setNegativeButton(R.string.cancelar, null)
-            .create()
-        dialogo.aoConfirmar {
-            val dados = formulario.validar() ?: return@aoConfirmar false
-            viewModel.adicionar(item, dados)
-            true
+        val formularioContainer = b.root.getChildAt(0) as LinearLayout
+        var itemSelecionado = item
+        var formulario = criarFormulario(b, itemSelecionado, observacaoInicial, perguntarOpcoesSuco)
+
+        if (variantes.size > 1) {
+            val cabecalho = TextView(this).apply {
+                text = variantes.first().produto.grupo.orEmpty()
+                setTextColor(getColor(R.color.texto_primario))
+                textSize = 20f
+                setPadding(0, dp(12), 0, dp(4))
+            }
+            val dica = TextView(this).apply {
+                text = getString(R.string.escolha_opcao_produto)
+                setTextColor(getColor(R.color.texto_secundario))
+                textSize = 14f
+                setPadding(0, 0, 0, dp(8))
+            }
+            val selecao = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+            formularioContainer.addView(cabecalho, 0)
+            formularioContainer.addView(dica, 1)
+            formularioContainer.addView(selecao, 2)
+            val botoes = mutableListOf<RadioButton>()
+            variantes.forEach { opcao ->
+                val botao = RadioButton(this).apply {
+                    id = View.generateViewId()
+                    text = "${opcao.produto.rotuloNoGrupo()}   ·   ${Moeda.formatar(opcao.produto.precoCentavos)}"
+                    isEnabled = !opcao.produto.esgotado
+                    setPadding(dp(8), dp(6), dp(8), dp(6))
+                    setOnClickListener {
+                        if (opcao.produto.esgotado) return@setOnClickListener
+                        botoes.forEach { it.isChecked = it === this }
+                        itemSelecionado = opcao
+                        b.grupoOpcoes.removeAllViews()
+                        b.textInfo.text = textoInfo(opcao)
+                        val pedePreparo = opcao.categoria.perguntarOpcoesSuco &&
+                            FormularioItem.exigeOpcaoLeite(opcao.produto.nome, opcao.produto.grupo)
+                        formulario = criarFormulario(b, opcao, observacaoInicial, pedePreparo)
+                    }
+                }
+                botoes += botao
+                selecao.addView(botao)
+                if (opcao == item) botao.isChecked = true
+            }
         }
-        dialogo.show()
+
+        b.textInfo.text = textoInfo(itemSelecionado)
+        if (variantes.size > 1) {
+            b.textInfo.setPadding(0, dp(6), 0, 0)
+        }
+
+        if (variantes.size > 1) {
+            lateinit var sheet: BottomSheetDialog
+            val botaoAdicionar = MaterialButton(this).apply {
+                text = getString(R.string.adicionar)
+                icon = getDrawable(R.drawable.ic_check)
+                iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(12) }
+                setOnClickListener {
+                    val dados = formulario.validar() ?: return@setOnClickListener
+                    viewModel.adicionar(itemSelecionado, dados)
+                    sheet.dismiss()
+                }
+            }
+            formularioContainer.addView(botaoAdicionar)
+            sheet = BottomSheetDialog(this)
+            sheet.setContentView(b.root)
+            sheet.setOnShowListener {
+                sheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                sheet.behavior.skipCollapsed = true
+            }
+            sheet.show()
+        } else {
+            val dialogo = MaterialAlertDialogBuilder(this)
+                .setTitle(produto.nome)
+                .setView(b.root)
+                .setPositiveButton(R.string.adicionar, null)
+                .setNegativeButton(R.string.cancelar, null)
+                .create()
+            dialogo.aoConfirmar {
+                val dados = formulario.validar() ?: return@aoConfirmar false
+                viewModel.adicionar(itemSelecionado, dados)
+                true
+            }
+            dialogo.show()
+        }
     }
+
+    private fun criarFormulario(
+        b: DialogItemBinding,
+        item: ProdutoItem,
+        observacao: String,
+        perguntarOpcoesSuco: Boolean
+    ) = FormularioItem(
+        b,
+        quantidadeInicial = 1,
+        precoCentavos = item.produto.precoCentavos,
+        precoEditavel = item.produto.precoLivre,
+        observacaoInicial = observacao,
+        perguntarOpcoesSuco = perguntarOpcoesSuco,
+        quantidadeMaxima = item.produto.estoque ?: FormularioItem.QUANTIDADE_MAXIMA,
+        passo = item.produto.multiplo
+    )
+
+    private fun textoInfo(item: ProdutoItem): String = listOfNotNull(
+        getString(R.string.info_produto, item.categoria.nome, Moeda.formatar(item.produto.precoCentavos)),
+        item.produto.estoque?.let { getString(R.string.restam_n, it) }
+    ).joinToString(" · ")
+
+    private fun dp(valor: Int): Int = (valor * resources.displayMetrics.density).toInt()
 
     companion object {
         private const val EXTRA_COMANDA_ID = "comanda_id"

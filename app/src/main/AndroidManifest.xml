@@ -37,13 +37,6 @@
             tools:ignore="LockedOrientationActivity,DiscouragedApi" />
 
         <activity
-            android:name=".ui.comanda.FechamentoContaActivity"
-            android:label="@string/titulo_fechamento_conta"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            tools:ignore="LockedOrientationActivity,DiscouragedApi" />
-
-        <activity
             android:name=".ui.produto.IncluirProdutoActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"

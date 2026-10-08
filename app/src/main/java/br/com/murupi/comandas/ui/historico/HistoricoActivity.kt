@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.databinding.ActivityHistoricoBinding
@@ -14,9 +13,8 @@ import br.com.murupi.comandas.ui.common.BaseActivity
 import br.com.murupi.comandas.ui.common.aplicarInsets
 import br.com.murupi.comandas.ui.common.coletar
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
-import br.com.murupi.comandas.ui.inicio.ResumoComandaAdapter
 import br.com.murupi.comandas.data.model.titulo
-import br.com.murupi.comandas.util.DataHora
+import br.com.murupi.comandas.util.Moeda
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
@@ -25,15 +23,13 @@ class HistoricoActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHistoricoBinding
     private val viewModel by viewModelsDoApp { HistoricoViewModel(it.comandas, it.impressao, it.impressoras) }
-    private val adapter = ResumoComandaAdapter(
-        detalhe = { resumo ->
-            listOfNotNull(
-                resumo.comanda.endereco.takeIf { it.isNotEmpty() },
-                resumo.comanda.fechadaEm?.let { DataHora.completa(it) }
-            ).joinToString(" · ")
+    private val adapter = HistoricoVendasAdapter(
+        aoTocar = {
+            startActivity(ComandaActivity.intentPara(this, it.resumo.comanda.id, consultaHistorico = true))
         },
-        aoTocar = { startActivity(ComandaActivity.intentPara(this, it.comanda.id)) },
-        aoPressionar = { resumo -> confirmarExclusao(resumo.comanda.id, resumo.comanda.titulo) }
+        aoPressionar = { venda ->
+            confirmarExclusao(venda.resumo.comanda.id, venda.resumo.comanda.titulo)
+        }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,15 +39,23 @@ class HistoricoActivity : BaseActivity() {
         configurarBarra(binding.barra, voltar = true)
         binding.recycler.aplicarInsets(base = true)
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.recycler.adapter = adapter
 
         coletar {
             launch {
                 viewModel.contas.collect { lista ->
-                    adapter.submitList(lista)
+                    adapter.submitList(lista) { invalidateOptionsMenu() }
                     binding.textVazio.isVisible = lista.isEmpty()
-                    invalidateOptionsMenu()
+                    binding.cardResumo.isVisible = lista.isNotEmpty()
+                }
+            }
+            launch {
+                viewModel.resumo.collect { resumo ->
+                    binding.textTotalVendido.text = Moeda.formatar(resumo.totalCentavos)
+                    binding.textQtdVendas.text = resources.getQuantityString(
+                        R.plurals.vendas, resumo.qtd, resumo.qtd
+                    )
+                    binding.textTicketMedio.text = Moeda.formatar(resumo.ticketMedioCentavos)
                 }
             }
             launch { viewModel.eventos.collect { avisar(it) } }

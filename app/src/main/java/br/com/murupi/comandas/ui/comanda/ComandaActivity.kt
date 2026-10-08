@@ -8,20 +8,20 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.Restaurante
 import br.com.murupi.comandas.data.model.FormaPagamento
 import br.com.murupi.comandas.data.model.ItemComanda
+import br.com.murupi.comandas.data.model.PoliticaReabertura
 import br.com.murupi.comandas.data.model.StatusComanda
 import br.com.murupi.comandas.data.model.numero
 import br.com.murupi.comandas.databinding.ActivityComandaBinding
 import br.com.murupi.comandas.databinding.DialogItemBinding
-import br.com.murupi.comandas.databinding.DialogPagamentoBinding
 import br.com.murupi.comandas.ui.common.BaseActivity
 import br.com.murupi.comandas.ui.common.FormularioItem
 import br.com.murupi.comandas.ui.common.aoConfirmar
@@ -31,6 +31,7 @@ import br.com.murupi.comandas.ui.common.pedirTexto
 import br.com.murupi.comandas.ui.common.tituloBarra
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
 import br.com.murupi.comandas.ui.impressora.ImpressorasActivity
+import br.com.murupi.comandas.ui.inicio.InicioActivity
 import br.com.murupi.comandas.ui.produto.IncluirProdutoActivity
 import br.com.murupi.comandas.util.Moeda
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -41,11 +42,16 @@ class ComandaActivity : BaseActivity() {
 
     private lateinit var binding: ActivityComandaBinding
     private val comandaId by lazy { intent.getLongExtra(EXTRA_COMANDA_ID, 0L) }
+    private val consultaHistorico by lazy { intent.getBooleanExtra(EXTRA_CONSULTA_HISTORICO, false) }
     private val viewModel by viewModelsDoApp { ComandaViewModel(comandaId, it.comandas, it.impressao) }
     private val adapter = ItemComandaAdapter(aoTocar = ::editarItem)
 
     /** Comanda fechada aberta pelo histórico: mostra tudo, mas não deixa alterar nada. */
     private var somenteLeitura = false
+
+    private val protegerRascunho = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() = confirmarSaidaDoPedido()
+    }
 
     override val ancoraSnackbar: View get() = binding.fab
 
@@ -55,9 +61,9 @@ class ComandaActivity : BaseActivity() {
         setContentView(binding.root)
         configurarBarra(binding.barra, voltar = true)
         binding.barraTotal.aplicarInsets(base = true)
+        onBackPressedDispatcher.addCallback(this, protegerRascunho)
 
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.recycler.adapter = adapter
         binding.fab.setOnClickListener { startActivity(IncluirProdutoActivity.intentPara(this, comandaId)) }
 
@@ -72,6 +78,7 @@ class ComandaActivity : BaseActivity() {
         if (!estado.carregado) return
         val comanda = estado.comanda
         if (comanda == null) {
+            protegerRascunho.isEnabled = false
             encerrar()
             return
         }
@@ -81,6 +88,10 @@ class ComandaActivity : BaseActivity() {
             return
         }
         somenteLeitura = comanda.status != StatusComanda.ABERTA
+        protegerRascunho.isEnabled = !consultaHistorico &&
+            comanda.status == StatusComanda.ABERTA &&
+            estado.itens.isNotEmpty() &&
+            estado.itens.none { it.enviadoProducao }
         invalidateOptionsMenu()
         binding.fab.isVisible = !somenteLeitura
         supportActionBar?.title = comanda.tituloBarra(this)
@@ -94,9 +105,17 @@ class ComandaActivity : BaseActivity() {
         adapter.submitList(estado.itens)
         binding.textVazio.isVisible = estado.itens.isEmpty()
         binding.textTotal.text = Moeda.formatar(estado.totalCentavos)
-        binding.textPendentes.isVisible = estado.pendentes > 0
-        binding.textPendentes.text =
-            resources.getQuantityString(R.plurals.itens_pendentes, estado.pendentes, estado.pendentes)
+        binding.textPendentes.isVisible = estado.pendentes > 0 || estado.cancelamentosPendentes.isNotEmpty()
+        binding.textPendentes.text = listOfNotNull(
+            if (estado.pendentes > 0) resources.getQuantityString(
+                R.plurals.itens_pendentes, estado.pendentes, estado.pendentes
+            ) else null,
+            if (estado.cancelamentosPendentes.isNotEmpty()) resources.getQuantityString(
+                R.plurals.cancelamentos_pendentes,
+                estado.cancelamentosPendentes.size,
+                estado.cancelamentosPendentes.size
+            ) else null
+        ).joinToString(" · ")
     }
 
     /** A comanda foi paga, unida a outra ou cancelada: avisa e sai da tela. */
@@ -114,11 +133,25 @@ class ComandaActivity : BaseActivity() {
         when (evento) {
             is ComandaEvento.Aviso -> avisar(evento.mensagem)
             is ComandaEvento.Impressao -> mostrarResultadoImpressao(evento)
+            ComandaEvento.SolicitarPreviaProducao -> mostrarPreviaProducao(reimprimirTudo = false)
             is ComandaEvento.AbrirComanda -> {
                 startActivity(intentPara(this, evento.id))
                 finish()
             }
         }
+    }
+
+    private fun confirmarSaidaDoPedido() {
+        val comanda = viewModel.estado.value.comanda ?: return
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.pedido_nao_impresso_titulo)
+            .setMessage(getString(R.string.pedido_nao_impresso_mensagem, comanda.tituloBarra(this)))
+            .setNegativeButton(R.string.continuar_pedido, null)
+            .setPositiveButton(R.string.sair_excluir_pedido) { _, _ ->
+                protegerRascunho.isEnabled = false
+                viewModel.excluirPedidoNaoImpresso()
+            }
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -135,7 +168,8 @@ class ComandaActivity : BaseActivity() {
         menu.findItem(R.id.action_imprimir_producao)?.isVisible = !somenteLeitura
         menu.findItem(R.id.action_pagamento)?.isVisible = !somenteLeitura
         menu.findItem(R.id.action_pessoas)?.isVisible = !somenteLeitura
-        menu.findItem(R.id.action_reabrir)?.isVisible = somenteLeitura && comanda?.formaPagamento == null
+        menu.findItem(R.id.action_reabrir)?.isVisible =
+            PoliticaReabertura.podeReabrir(comanda, consultaHistorico)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -158,8 +192,8 @@ class ComandaActivity : BaseActivity() {
     private fun imprimirProducao() {
         val estado = viewModel.estado.value
         when {
-            estado.itens.isEmpty() -> avisar(R.string.comanda_sem_itens)
-            estado.pendentes > 0 -> mostrarPreviaProducao(reimprimirTudo = false)
+            estado.itens.isEmpty() && estado.cancelamentosPendentes.isEmpty() -> avisar(R.string.comanda_sem_itens)
+            estado.pendentes > 0 || estado.cancelamentosPendentes.isNotEmpty() -> mostrarPreviaProducao(reimprimirTudo = false)
             else -> MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.imprimir_producao)
                 .setMessage(R.string.reimprimir_pergunta)
@@ -176,7 +210,12 @@ class ComandaActivity : BaseActivity() {
                 avisar(R.string.nada_para_imprimir)
                 return@launch
             }
-            mostrarPrevia(R.string.imprimir_producao, previas) {
+            val titulo = if (viewModel.estado.value.cancelamentosPendentes.isNotEmpty()) {
+                R.string.atualizacao_producao
+            } else {
+                R.string.imprimir_producao
+            }
+            mostrarPrevia(titulo, previas) {
                 viewModel.imprimirProducao(reimprimirTudo = reimprimirTudo)
             }
         }
@@ -221,7 +260,14 @@ class ComandaActivity : BaseActivity() {
             return
         }
         if (resultado.sucesso) {
-            avisar(R.string.impressao_ok, resultado.envios.joinToString { it.impressora.nome })
+            val mensagem = getString(R.string.impressao_ok, resultado.envios.joinToString { it.impressora.nome })
+            if (evento.titulo == R.string.imprimir_producao || evento.titulo == R.string.atualizacao_producao) {
+                Toast.makeText(applicationContext, mensagem, Toast.LENGTH_SHORT).show()
+                startActivity(InicioActivity.intentParaMesas(this))
+                finish()
+            } else {
+                avisar(mensagem)
+            }
             return
         }
         val linhas = buildList {
@@ -234,6 +280,7 @@ class ComandaActivity : BaseActivity() {
             }
             resultado.papeisSemImpressora.forEach { add(getString(R.string.sem_impressora_papel, it.descricao)) }
             if (evento.titulo == R.string.imprimir_producao) add(getString(R.string.pendentes_continuam))
+            if (evento.titulo == R.string.atualizacao_producao) add(getString(R.string.cancelamento_aguarda_impressao))
         }
         MaterialAlertDialogBuilder(this)
             .setTitle(evento.titulo)
@@ -289,15 +336,19 @@ class ComandaActivity : BaseActivity() {
     }
 
     private fun confirmarRemocao(item: ItemComanda) {
-        if (!item.enviadoProducao) {
-            viewModel.removerItem(item)
-            return
-        }
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.remover_item)
-            .setMessage(getString(R.string.remover_item_enviado, item.nome))
+            .setTitle(if (item.enviadoProducao) R.string.cancelar_item else R.string.remover_item)
+            .setMessage(
+                getString(
+                    if (item.enviadoProducao) R.string.cancelar_item_enviado_confirmacao
+                    else R.string.remover_item_confirmacao,
+                    item.nome
+                )
+            )
             .setNegativeButton(R.string.cancelar, null)
-            .setPositiveButton(R.string.remover) { _, _ -> viewModel.removerItem(item) }
+            .setPositiveButton(if (item.enviadoProducao) R.string.cancelar_item else R.string.remover) { _, _ ->
+                viewModel.removerItem(item)
+            }
             .show()
     }
 
@@ -369,14 +420,29 @@ class ComandaActivity : BaseActivity() {
             return
         }
 
-        startActivity(FechamentoContaActivity.intentPara(this, comanda.id))
+        val formas = FormaPagamento.values()
+        var formaSelecionada = FormaPagamento.DINHEIRO
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.pagamento_comanda, comanda.tituloBarra(this)))
+            .setMessage(getString(R.string.pagamento_total_e_forma, Moeda.formatar(estado.totalCentavos)))
+            .setSingleChoiceItems(formas.map { it.descricao }.toTypedArray(), 0) { _, indice ->
+                formaSelecionada = formas[indice]
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.confirmar_pagamento) { _, _ ->
+                viewModel.fecharComanda(listOf(formaSelecionada), estado.totalCentavos)
+            }
+            .show()
     }
 
     companion object {
         private const val EXTRA_COMANDA_ID = "comanda_id"
+        private const val EXTRA_CONSULTA_HISTORICO = "consulta_historico"
         private const val MAX_PESSOAS = 99
 
-        fun intentPara(context: Context, comandaId: Long): Intent =
-            Intent(context, ComandaActivity::class.java).putExtra(EXTRA_COMANDA_ID, comandaId)
+        fun intentPara(context: Context, comandaId: Long, consultaHistorico: Boolean = false): Intent =
+            Intent(context, ComandaActivity::class.java)
+                .putExtra(EXTRA_COMANDA_ID, comandaId)
+                .putExtra(EXTRA_CONSULTA_HISTORICO, consultaHistorico)
     }
 }

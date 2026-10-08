@@ -96,7 +96,7 @@ class IncluirProdutoViewModel(
                 )
             )
             else -> {
-                // Categorias sem produto ativo ficam ocultas no lançamento.
+                // Todas as categorias ficam visíveis no lançamento, mesmo sem produto ativo.
                 TelaProdutos.Categorias(categoriasParaLancamento(cats))
             }
         }

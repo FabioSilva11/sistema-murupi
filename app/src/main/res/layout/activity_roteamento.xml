@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/fundo"
     android:orientation="vertical"
     tools:context=".ui.impressora.RoteamentoActivity">
 
@@ -11,14 +12,30 @@
         android:id="@+id/barra"
         layout="@layout/app_bar" />
 
-    <TextView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/fundo"
-        android:padding="16dp"
-        android:text="@string/roteamento_explicacao"
-        android:textColor="@color/texto_secundario"
-        android:textSize="14sp" />
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="1dp"
+        app:strokeColor="#E5EAF2"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_print"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/murupi_blue"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="@string/roteamento_explicacao"
+            android:textColor="@color/texto_secundario"
+            android:textSize="14sp" />
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
@@ -26,6 +43,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
         tools:listitem="@layout/item_roteamento" />
 
 </LinearLayout>

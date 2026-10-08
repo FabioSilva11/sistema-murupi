@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Linha branca compacta com efeito de toque, sobre o fundo cinza da lista. -->
+<!-- Superfície leve de lista com contorno e efeito de toque. -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?attr/colorControlHighlight">
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="14dp" />
+            <corners android:radius="16dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#E5EAF2" />
         </shape>
     </item>
 </ripple>

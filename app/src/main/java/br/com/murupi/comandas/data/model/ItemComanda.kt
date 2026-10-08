@@ -39,7 +39,12 @@ data class ItemComanda(
     val enviadoProducao: Boolean = false,
     val criadoEm: Long = System.currentTimeMillis(),
     /** Copiado do produto: a quantidade só muda de N em N. */
-    @ColumnInfo(defaultValue = "1") val multiplo: Int = 1
+    @ColumnInfo(defaultValue = "1") val multiplo: Int = 1,
+    /** Mantém o registro de uma linha cancelada depois de enviada à produção. */
+    @ColumnInfo(defaultValue = "0") val cancelado: Boolean = false,
+    val canceladoEm: Long? = null,
+    /** O aviso de cancelamento ainda precisa chegar à estação de produção. */
+    @ColumnInfo(defaultValue = "0") val cancelamentoPendenteImpressao: Boolean = false
 )
 
 val ItemComanda.totalCentavos: Long get() = quantidade * precoUnitarioCentavos

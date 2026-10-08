@@ -15,7 +15,7 @@ import br.com.murupi.comandas.data.model.Produto
 
 @Database(
     entities = [Categoria::class, Produto::class, Comanda::class, ItemComanda::class, Impressora::class, ConfigRestaurante::class],
-    version = 6,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -109,9 +109,33 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** Versão 7: preserva todas as formas usadas no pagamento dividido de uma conta. */
+        val MIGRACAO_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE comandas ADD COLUMN formasPagamentoCsv TEXT")
+            }
+        }
+
+        /** Versão 8: preserva cancelamentos de itens que já chegaram à cozinha. */
+        val MIGRACAO_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE itens_comanda ADD COLUMN cancelado INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE itens_comanda ADD COLUMN canceladoEm INTEGER")
+                db.execSQL("ALTER TABLE itens_comanda ADD COLUMN cancelamentoPendenteImpressao INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun criar(context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, NOME_ARQUIVO)
-                .addMigrations(MIGRACAO_1_2, MIGRACAO_2_3, MIGRACAO_3_4, MIGRACAO_4_5, MIGRACAO_5_6)
+                .addMigrations(
+                    MIGRACAO_1_2,
+                    MIGRACAO_2_3,
+                    MIGRACAO_3_4,
+                    MIGRACAO_4_5,
+                    MIGRACAO_5_6,
+                    MIGRACAO_6_7,
+                    MIGRACAO_7_8
+                )
                 .build()
     }
 }

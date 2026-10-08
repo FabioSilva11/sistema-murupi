@@ -2,7 +2,6 @@ package br.com.murupi.comandas.ui.impressora
 
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.Categoria
@@ -29,7 +28,6 @@ class RoteamentoActivity : BaseActivity() {
         configurarBarra(binding.barra, voltar = true)
         binding.recycler.aplicarInsets(base = true)
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.recycler.adapter = adapter
 
         coletar { app.cardapio.categorias().collect(adapter::submitList) }

@@ -54,4 +54,6 @@ class InicioViewModel(private val repo: ComandaRepository) : ViewModel() {
     fun limparComandasVazias() {
         viewModelScope.launch { mutex.withLock { repo.limparComandasVazias() } }
     }
+
+    suspend fun resetarPedidosEHistorico() = mutex.withLock { repo.resetarPedidosEHistorico() }
 }

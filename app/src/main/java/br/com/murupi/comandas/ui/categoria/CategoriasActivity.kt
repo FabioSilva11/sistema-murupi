@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.Categoria
@@ -42,7 +41,6 @@ class CategoriasActivity : BaseActivity() {
         binding.root.aplicarInsets(base = true)
 
         binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         binding.recycler.adapter = adapter
         binding.fab.setOnClickListener { editar(null) }
 

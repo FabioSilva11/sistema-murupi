@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,46 +8,60 @@
     android:orientation="vertical"
     tools:context=".ui.inicio.MesasFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="1dp"
+        app:strokeColor="@color/murupi_blue_claro"
+        app:strokeWidth="1dp">
 
-        <View
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:background="@drawable/bolinha"
-            android:backgroundTint="@color/mesa_livre" />
-
-        <TextView
-            android:id="@+id/textLivres"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="24dp"
-            android:textColor="@color/texto_primario"
-            android:textSize="14sp"
-            tools:text="Livres: 52" />
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp">
 
-        <View
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:background="@drawable/bolinha"
-            android:backgroundTint="@color/mesa_ocupada" />
+            <View
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="@drawable/bolinha"
+                android:backgroundTint="@color/mesa_livre" />
 
-        <TextView
-            android:id="@+id/textOcupadas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@color/texto_primario"
-            android:textSize="14sp"
-            tools:text="Ocupadas: 8" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textLivres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/texto_primario"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Livres: 52" />
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="@drawable/bolinha"
+                android:backgroundTint="@color/mesa_ocupada" />
+
+            <TextView
+                android:id="@+id/textOcupadas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/texto_primario"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Ocupadas: 8" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
@@ -54,7 +69,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:padding="6dp"
+        android:padding="8dp"
         tools:itemCount="12"
         tools:listitem="@layout/item_mesa" />
 

@@ -17,7 +17,7 @@ interface ComandaDao {
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
                COALESCE(SUM(i.quantidade), 0) AS qtdItens
-        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
+        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id AND i.cancelado = 0
         WHERE c.status = 'ABERTA'
         GROUP BY c.id
         ORDER BY c.mesa, c.sequencia
@@ -29,7 +29,7 @@ interface ComandaDao {
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
                COALESCE(SUM(i.quantidade), 0) AS qtdItens
-        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
+        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id AND i.cancelado = 0
         WHERE c.status = 'ABERTA' AND c.mesa = :mesa
         GROUP BY c.id
         ORDER BY c.sequencia
@@ -41,7 +41,7 @@ interface ComandaDao {
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
                COALESCE(SUM(i.quantidade), 0) AS qtdItens
-        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
+        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id AND i.cancelado = 0
         WHERE c.tipo = :tipo AND (c.status = 'ABERTA' OR (c.status = 'FECHADA' AND c.formaPagamento IS NULL))
         GROUP BY c.id
         ORDER BY c.abertaEm, c.id
@@ -54,6 +54,9 @@ interface ComandaDao {
 
     @Query("SELECT * FROM comandas WHERE id = :id")
     suspend fun buscar(id: Long): Comanda?
+
+    @Query("SELECT * FROM comandas WHERE status = 'ABERTA'")
+    suspend fun listarAbertas(): List<Comanda>
 
     @Query("SELECT * FROM comandas WHERE mesa = :mesa AND status = 'ABERTA' ORDER BY sequencia")
     suspend fun abertasDaMesa(mesa: Int): List<Comanda>
@@ -69,7 +72,7 @@ interface ComandaDao {
         """
         SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
                COALESCE(SUM(i.quantidade), 0) AS qtdItens
-        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
+        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id AND i.cancelado = 0
         WHERE c.status = 'FECHADA' AND c.formaPagamento IS NULL AND c.tipo = 'MESA' AND c.mesa = :mesa
         GROUP BY c.id
         ORDER BY c.fechadaEm DESC, c.id DESC
@@ -81,9 +84,9 @@ interface ComandaDao {
     /** Histórico de vendas: todas as contas fechadas, das mais recentes às mais antigas. */
     @Query(
         """
-        SELECT c.*, COALESCE(SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
+        SELECT c.*, COALESCE(c.totalPagoCentavos, SUM(i.quantidade * i.precoUnitarioCentavos), 0) AS totalCentavos,
                COALESCE(SUM(i.quantidade), 0) AS qtdItens
-        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id
+        FROM comandas c LEFT JOIN itens_comanda i ON i.comandaId = c.id AND i.cancelado = 0
         WHERE c.status = 'FECHADA' AND c.formaPagamento IS NOT NULL
         GROUP BY c.id
         ORDER BY c.fechadaEm DESC, c.id DESC
@@ -99,6 +102,9 @@ interface ComandaDao {
 
     @Delete
     suspend fun excluir(comanda: Comanda)
+
+    @Query("DELETE FROM comandas")
+    suspend fun excluirTodas(): Int
 
     /** Comandas abertas por engano (sem itens, sem pessoas e sem cliente) são apagadas. */
     @Query(

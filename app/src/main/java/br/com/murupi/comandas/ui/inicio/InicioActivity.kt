@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -15,7 +16,9 @@ import br.com.murupi.comandas.ui.common.aplicarInsets
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
 import br.com.murupi.comandas.ui.config.ConfigActivity
 import br.com.murupi.comandas.ui.impressora.ImpressorasActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.launch
 
 /** Tela inicial: abas Mesas, Balcão e Delivery com o mesmo fluxo de comanda. */
 class InicioActivity : BaseActivity() {
@@ -34,19 +37,25 @@ class InicioActivity : BaseActivity() {
         binding.pager.offscreenPageLimit = 2
         binding.pager.aplicarInsets(base = true)
         TabLayoutMediator(binding.abas, binding.pager) { aba, posicao ->
-            aba.setText(
-                when (posicao) {
-                    PAGINA_BALCAO -> R.string.aba_balcao
-                    PAGINA_DELIVERY -> R.string.aba_delivery
-                    else -> R.string.aba_mesas
-                }
-            )
+            when (posicao) {
+                PAGINA_MESAS -> aba.setText(R.string.aba_mesas)
+                PAGINA_BALCAO -> aba.setText(R.string.aba_balcao)
+                PAGINA_DELIVERY -> aba.setText(R.string.aba_delivery)
+            }
         }.attach()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.limparComandasVazias()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(EXTRA_ABRIR_MESAS, false) && ::binding.isInitialized) {
+            binding.pager.setCurrentItem(PAGINA_MESAS, false)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -72,26 +81,61 @@ class InicioActivity : BaseActivity() {
             true
         }
         R.id.action_sobre -> {
-            val versao = try {
-                @Suppress("DEPRECATION")
-                packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()
-            } catch (_: Exception) {
-                ""
-            }
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.sobre)
-                .setMessage(getString(R.string.sobre_mensagem, versao))
-                .setPositiveButton(R.string.ok, null)
-                .show()
+            abrirSobre()
+            true
+        }
+        R.id.action_reset -> {
+            confirmarReset()
             true
         }
         else -> super.onOptionsItemSelected(item)
     }
 
-    private companion object {
+    private fun confirmarReset() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.resetar)
+            .setMessage(R.string.resetar_pedidos_historico_pergunta)
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.resetar) { _, _ ->
+                lifecycleScope.launch {
+                    viewModel.resetarPedidosEHistorico()
+                    binding.pager.setCurrentItem(PAGINA_MESAS, false)
+                    avisar(R.string.reset_concluido)
+                }
+            }
+            .show()
+    }
+
+    private fun abrirSobre() {
+        val versao = try {
+            @Suppress("DEPRECATION")
+            packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()
+        } catch (_: Exception) {
+            ""
+        }
+        val sobre = br.com.murupi.comandas.databinding.DialogSobreBinding.inflate(layoutInflater)
+        sobre.textVersao.text = getString(R.string.sobre_versao, versao)
+        sobre.botaoGithub.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/FabioSilva11")))
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.sobre)
+            .setView(sobre.root)
+            .setPositiveButton(R.string.fechar, null)
+            .show()
+    }
+
+    companion object {
         const val PAGINA_MESAS = 0
         const val PAGINA_BALCAO = 1
         const val PAGINA_DELIVERY = 2
+
+        private const val EXTRA_ABRIR_MESAS = "abrir_mesas_apos_impressao"
+
+        fun intentParaMesas(context: android.content.Context): Intent =
+            Intent(context, InicioActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(EXTRA_ABRIR_MESAS, true)
     }
 }
 

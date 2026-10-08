@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="4dp"
             tools:listitem="@layout/item_gerencia_categoria" />
 
@@ -31,6 +33,9 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="24dp"
+            android:drawableTop="@drawable/ic_catalogo"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/murupi_blue"
             android:text="@string/categorias_vazio"
             android:textColor="@color/texto_secundario"
             android:textSize="16sp"
@@ -44,6 +49,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="@string/nova_categoria"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/murupi_blue"
+        app:tint="@color/white" />
 
 </LinearLayout>

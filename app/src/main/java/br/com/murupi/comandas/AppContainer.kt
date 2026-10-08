@@ -31,9 +31,16 @@ class AppContainer(context: Context) {
 
     init {
         escopo.launch {
-            CardapioSeed.popularSeVazio(database)
+            CardapioSeed.popularSeVazio(database, lerCatalogoPadronizado(context))
             // Configuração salva (ou os padrões) disponível para telas e tickets.
             Restaurante.aplicar(config.carregar() ?: ConfigRestaurante())
         }
+    }
+
+    private fun lerCatalogoPadronizado(context: Context): String = try {
+        context.assets.open("catalogo_padronizado.json").bufferedReader().use { it.readText() }
+    } catch (e: Exception) {
+        // Asset ausente: o seed ignora e mantém o banco como está.
+        "{}"
     }
 }

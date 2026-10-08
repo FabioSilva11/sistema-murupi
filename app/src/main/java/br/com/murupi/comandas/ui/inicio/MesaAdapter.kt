@@ -24,14 +24,17 @@ class MesaAdapter(
         val contexto = holder.itemView.context
         with(holder.b) {
             textNumero.text = mesa.numero.toString()
-            card.setCardBackgroundColor(
+            textNumero.setTextColor(
                 ContextCompat.getColor(contexto, if (mesa.ocupada) R.color.mesa_ocupada else R.color.mesa_livre)
+            )
+            card.setStrokeColor(
+                ContextCompat.getColor(contexto, if (mesa.ocupada) R.color.murupi_blue_claro else R.color.mesa_livre_contorno)
             )
             textInfo.text = when {
                 !mesa.ocupada -> contexto.getString(R.string.mesa_livre)
                 mesa.comandas.size > 1 ->
                     contexto.getString(R.string.mesa_info_varias, Moeda.formatar(mesa.totalCentavos), mesa.comandas.size)
-                else -> Moeda.formatar(mesa.totalCentavos)
+                else -> contexto.getString(R.string.mesa_ocupada_total, Moeda.formatar(mesa.totalCentavos))
             }
             card.setOnClickListener { aoTocar(mesa) }
         }

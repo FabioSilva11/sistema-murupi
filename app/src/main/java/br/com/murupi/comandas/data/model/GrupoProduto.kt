@@ -15,26 +15,35 @@ data class GrupoProduto(
     val categoriaId: Long,
     val nome: String,
     val descricao: String = "",
-    val opcoes: List<OpcaoGrupoProduto>
+    val opcoes: List<OpcaoGrupoProduto>,
+    /** Quando não nulo, aplica a todas as opções (novas e existentes). */
+    val ativo: Boolean? = null
 ) {
 
     /** Mantém estoque, disponibilidade e múltiplo das variantes que já existiam. */
     fun paraProdutos(basePorId: Map<Long, Produto> = emptyMap()): List<Produto> =
         opcoes.map { opcao ->
-            basePorId[opcao.id]?.copy(
-                categoriaId = categoriaId,
-                nome = opcao.nome,
-                precoCentavos = opcao.precoCentavos,
-                grupo = nome,
-                descricao = descricao
-            ) ?: Produto(
-                id = opcao.id,
-                categoriaId = categoriaId,
-                nome = opcao.nome,
-                precoCentavos = opcao.precoCentavos,
-                grupo = nome,
-                descricao = descricao
-            )
+            val base = basePorId[opcao.id]
+            if (base != null) {
+                base.copy(
+                    categoriaId = categoriaId,
+                    nome = opcao.nome,
+                    precoCentavos = opcao.precoCentavos,
+                    grupo = nome,
+                    descricao = descricao,
+                    ativo = ativo ?: base.ativo
+                )
+            } else {
+                Produto(
+                    id = opcao.id,
+                    categoriaId = categoriaId,
+                    nome = opcao.nome,
+                    precoCentavos = opcao.precoCentavos,
+                    grupo = nome,
+                    descricao = descricao,
+                    ativo = ativo ?: true
+                )
+            }
         }
 
     /** Variantes existentes que foram retiradas da tela devem sair do catálogo. */

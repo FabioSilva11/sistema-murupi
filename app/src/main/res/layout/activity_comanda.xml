@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/fundo"
     android:orientation="vertical"
     tools:context=".ui.comanda.ComandaActivity">
 
@@ -30,6 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingHorizontal="4dp"
+            android:paddingTop="8dp"
             android:paddingBottom="88dp"
             tools:listitem="@layout/item_comanda" />
 
@@ -38,7 +40,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:gravity="center"
             android:padding="24dp"
+            android:drawableTop="@drawable/ic_receipt"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/murupi_blue"
             android:text="@string/nenhum_produto_encontrado"
             android:textColor="@color/texto_secundario"
             android:textSize="16sp"
@@ -60,7 +66,7 @@
         android:id="@+id/barraTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/fundo"
+        android:background="@color/white"
         android:elevation="8dp"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"

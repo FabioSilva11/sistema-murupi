@@ -4,25 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:layout_margin="4dp"
+    android:layout_height="76dp"
+    android:layout_margin="6dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="18dp"
     app:cardElevation="2dp"
-    app:strokeWidth="0dp"
-    tools:cardBackgroundColor="#2E7D32">
+    app:strokeColor="@color/murupi_blue_claro"
+    app:strokeWidth="1dp">
 
-    <TextView
-        android:id="@+id/textNome"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:maxLines="3"
-        android:padding="6dp"
-        android:textColor="@color/white"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        tools:text="HAMBURGUER ARTESANAL" />
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
+
+        <View
+            android:id="@+id/viewCor"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="@drawable/bolinha"
+            tools:backgroundTint="#2E7D32" />
+
+        <TextView
+            android:id="@+id/textNome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:maxLines="3"
+            android:textColor="@color/texto_primario"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="HAMBURGUER ARTESANAL" />
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -16,6 +16,9 @@
     <string name="titulo_historico">Histórico de vendas</string>
     <string name="historico">Histórico</string>
     <string name="historico_vazio">Nenhuma conta fechada ainda.</string>
+    <string name="total_vendido">Total vendido</string>
+    <string name="vendas_titulo">Vendas</string>
+    <string name="ticket_medio">Ticket médio</string>
     <string name="excluir_venda_historico">Excluir venda do histórico</string>
     <string name="excluir_venda_historico_pergunta">Excluir permanentemente a venda %1$s? Esta ação também remove os itens da conta.</string>
     <string name="imprimir_historico">Imprimir histórico</string>
@@ -24,9 +27,28 @@
     <string name="historico_impresso">Histórico enviado para: %1$s</string>
     <string name="historico_falhou">Falha no histórico (%1$s): %2$s</string>
     <string name="sobre">Sobre</string>
-    <string name="sobre_mensagem">Versão %1$s\n\nFeito por Fabio Silva</string>
+    <string name="sobre_versao">Versão %1$s</string>
+    <string name="sobre_nome_autor">Fabio Silva</string>
+    <string name="sobre_funcao_autor">Desenvolvedor Android e web</string>
+    <string name="sobre_bio_autor">Crio apps, APIs e automações úteis para pequenos negócios e comunidades.</string>
+    <string name="sobre_tecnologias">Java · Kotlin · Python · FastAPI · Firebase</string>
+    <string name="sobre_github">Ver perfil no GitHub</string>
+    <string name="sobre_foto_descricao">Foto de Fabio Silva</string>
+    <string name="resetar">Reset</string>
+    <string name="resetar_pedidos_historico_pergunta">Apagar todas as comandas abertas e as vendas do histórico? As mesas serão liberadas. Esta ação não pode ser desfeita. Catálogo, impressoras e configurações serão mantidos.</string>
+    <string name="reset_concluido">Comandas apagadas, mesas liberadas e histórico de vendas limpo.</string>
+    <string name="pedido_nao_impresso_titulo">Sair e excluir o pedido?</string>
+    <string name="pedido_nao_impresso_mensagem">%1$s ainda não foi enviado à produção. Se sair, o pedido será excluído e o estoque reservado será devolvido.</string>
+    <string name="continuar_pedido">Continuar pedido</string>
+    <string name="sair_excluir_pedido">Sair e excluir</string>
+    <string name="pedido_excluido">Pedido %1$s excluído.</string>
+    <string name="pedido_nao_pode_excluir">O pedido já foi enviado à produção e foi mantido.</string>
+    <string name="itens_da_venda">Itens: %1$s</string>
+    <string name="sem_itens_na_venda">Toque para consultar os itens.</string>
+    <string name="abrir_perfil_github">Abrir perfil de Fabio Silva no GitHub</string>
     <string name="reabrir_conta">Reabrir conta</string>
     <string name="conta_reaberta">Conta %1$s reaberta.</string>
+    <string name="conta_paga_nao_reabre">Conta %1$s já foi paga e não pode ser reaberta. Consulte o Histórico.</string>
     <string name="incluir_produto">Incluir Produto</string>
 
     <!-- Comuns -->
@@ -49,6 +71,7 @@
     <string name="legenda_livres">Livres: %1$d</string>
     <string name="legenda_ocupadas">Ocupadas: %1$d</string>
     <string name="mesa_livre">Livre</string>
+    <string name="mesa_ocupada_total">Ocupada · %1$s</string>
     <string name="mesa_n">Mesa %1$d</string>
     <string name="escolha_comanda_titulo">Mesa %1$d · comandas</string>
     <string name="escolha_comanda_titulo_curto">Comandas</string>
@@ -74,6 +97,7 @@
     <string name="status_enviado">Enviado ✓</string>
     <string name="status_pendente">Pendente</string>
     <string name="imprimir_producao">Imprimir Produção</string>
+    <string name="atualizacao_producao">Atualização da produção</string>
     <string name="imprimir_espelho">Imprimir Espelho</string>
     <string name="efetuar_pagamento">Efetuar Pagamento</string>
     <string name="transferir_comanda">Transferir Comanda</string>
@@ -95,7 +119,11 @@
     <string name="dividir_item">Dividir em itens de 1</string>
     <string name="item_dividido">%1$s dividido em itens de 1.</string>
     <string name="pre_visualizar">Pré-visualizar</string>
-    <string name="remover_item_enviado">\"%1$s\" já foi enviado para a produção. Remover mesmo assim? Avise a cozinha.</string>
+    <string name="cancelar_item">Cancelar item</string>
+    <string name="cancelar_item_enviado_confirmacao">\"%1$s\" já foi enviado. Ele sairá da conta e a estação receberá uma atualização completa com o cancelamento destacado.</string>
+    <string name="remover_item_confirmacao">Remover \"%1$s\" do pedido? O total e o estoque reservado serão atualizados.</string>
+    <string name="item_nao_pode_cancelar">Este item não está mais ativo nesta comanda.</string>
+    <string name="cancelamento_aguarda_impressao">O cancelamento foi aplicado à conta, mas a impressora não confirmou a atualização. Tente imprimir a produção novamente.</string>
     <string name="quantidade_pessoas">Quantidade de pessoas</string>
     <string name="transferir_comanda_n">Transferir comanda %1$s</string>
     <string name="mesa_destino">Número da mesa de destino</string>
@@ -106,6 +134,7 @@
     <string name="manter_separada">Manter separada (nova comanda)</string>
     <string name="comanda_transferida">Comanda transferida para a mesa %1$d.</string>
     <string name="pagamento_comanda">Pagamento — %1$s</string>
+    <string name="pagamento_total_e_forma">Total da comanda: %1$s\n\nSelecione a forma de pagamento:</string>
     <string name="titulo_fechamento_conta">Fechar Conta</string>
     <string name="subtotal">Subtotal</string>
     <string name="desconto">Desconto</string>
@@ -152,6 +181,7 @@
     <string name="informe_preco">Informe o preço.</string>
     <string name="como_e_o_suco">Com leite ou sem leite?</string>
     <string name="escolha_opcao_suco">Escolha com leite ou sem leite.</string>
+    <string name="escolha_opcao_produto">Escolha um tamanho ou sabor e informe quantidade e observação.</string>
     <string name="observacao">Observação</string>
     <string name="descreva_opcao">Descreva como o cliente quer</string>
     <string name="item_adicionado">%1$dx %2$s adicionado.</string>
@@ -178,8 +208,14 @@
     <string name="todas_categorias">Todas as categorias</string>
     <string name="categoria">Categoria</string>
     <string name="informe_categoria">Escolha a categoria.</string>
-    <string name="grupo">Grupo (opcional)</string>
-    <string name="grupo_ajuda">Produtos do mesmo grupo aparecem juntos e expansíveis. Ex.: Graviola</string>
+    <string name="nome_opcao">Variação (ex.: 250ml, 10)</string>
+    <string name="grupo_salvo">Grupo \"%1$s\" salvo com %2$d opções.</string>
+    <string name="informe_opcao">Informe ao menos 1 opção com nome.</string>
+    <string name="tipo_preco_titulo">Como este produto possui preço?</string>
+    <string name="preco_unico">Preço único</string>
+    <string name="precos_por_variacao">Preços por variação</string>
+    <string name="preco_venda">Preço de venda</string>
+    <string name="adicionar_variacao">+ Adicionar variação</string>
     <string name="grupo_valor">grupo %1$s</string>
     <string name="composicao">Composição</string>
     <string name="composicao_ajuda">Aparece abaixo do nome no lançamento. Ex.: Maracujá, leite em pó e gelo</string>
@@ -313,6 +349,10 @@
     <string name="flag_demanda">destaque >>></string>
     <string name="flag_opcoes_suco">pergunta opções do suco</string>
 
+    <plurals name="vendas">
+        <item quantity="one">%1$d venda</item>
+        <item quantity="other">%1$d vendas</item>
+    </plurals>
     <plurals name="pessoas">
         <item quantity="one">%d pessoa</item>
         <item quantity="other">%d pessoas</item>
@@ -324,6 +364,10 @@
     <plurals name="itens_pendentes">
         <item quantity="one">%d item aguardando envio para a produção</item>
         <item quantity="other">%d itens aguardando envio para a produção</item>
+    </plurals>
+    <plurals name="cancelamentos_pendentes">
+        <item quantity="one">%d cancelamento aguardando aviso à estação</item>
+        <item quantity="other">%d cancelamentos aguardando aviso às estações</item>
     </plurals>
     <plurals name="aviso_pendentes_pagamento">
         <item quantity="one">Atenção: %d item ainda não foi enviado para a produção.</item>

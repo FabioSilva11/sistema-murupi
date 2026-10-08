@@ -17,6 +17,8 @@ data class Comanda(
     val abertaEm: Long = System.currentTimeMillis(),
     val fechadaEm: Long? = null,
     val formaPagamento: FormaPagamento? = null,
+    /** Formas usadas quando o pagamento foi dividido; nomes do enum separados por vírgula. */
+    val formasPagamentoCsv: String? = null,
     val totalPagoCentavos: Long? = null,
     val tipo: TipoComanda = TipoComanda.MESA,
     /** Delivery (e balcão, se informado): nome do cliente. */
@@ -42,6 +44,19 @@ val Comanda.rotuloImpressao: String get() = when (tipo) {
     TipoComanda.DELIVERY ->
         if (nomeCliente.isNotEmpty()) "DELIVERY $sequencia - $nomeCliente" else "DELIVERY $sequencia"
 }
+
+/** Formas usadas na venda. Contas antigas continuam usando [formaPagamento]. */
+val Comanda.formasPagamento: List<FormaPagamento>
+    get() = formasPagamentoCsv
+        ?.split(',')
+        ?.mapNotNull { nome -> runCatching { FormaPagamento.valueOf(nome) }.getOrNull() }
+        ?.distinct()
+        ?.takeIf { it.isNotEmpty() }
+        ?: listOfNotNull(formaPagamento)
+
+/** Rótulo compacto para o histórico de vendas. */
+val Comanda.formasPagamentoDescricao: String
+    get() = formasPagamento.joinToString(" + ") { it.descricao }
 
 /** Comanda aberta com o total já somado, para a tela de mesas. */
 data class ComandaResumo(

@@ -17,7 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:tabMode="fixed" />
+        app:tabMode="fixed"
+        app:tabIndicatorFullWidth="false"
+        app:tabSelectedTextColor="@color/murupi_blue"
+        app:tabTextColor="@color/texto_secundario" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"

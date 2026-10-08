@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.Categoria
+import br.com.murupi.comandas.data.model.GrupoProduto
 import br.com.murupi.comandas.data.model.Produto
 import br.com.murupi.comandas.data.model.ProdutoItem
 import br.com.murupi.comandas.data.repo.CardapioRepository
@@ -79,6 +80,17 @@ class CatalogoViewModel(private val cardapio: CardapioRepository) : ViewModel() 
             _eventos.send(Mensagem(R.string.produto_salvo, produto.nome))
         }
     }
+
+    fun salvarGrupo(grupo: GrupoProduto, idsOriginais: Set<Long>) {
+        viewModelScope.launch {
+            cardapio.salvarGrupo(grupo, idsOriginais)
+            _eventos.send(Mensagem(R.string.grupo_salvo, grupo.nome, grupo.opcoes.size))
+        }
+    }
+
+    /** Produtos atuais de um grupo, para pré-preencher a edição do grupo. */
+    fun produtosDoGrupo(grupo: String, categoriaId: Long): List<Produto> =
+        produtos.value.map { it.produto }.filter { it.grupo == grupo && it.categoriaId == categoriaId }
 
     fun excluir(produto: Produto) {
         viewModelScope.launch {

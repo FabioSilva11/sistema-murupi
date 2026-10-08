@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.ComandaResumo
 import br.com.murupi.comandas.data.model.Impressora
+import br.com.murupi.comandas.data.model.ItemComanda
 import br.com.murupi.comandas.data.repo.ComandaRepository
 import br.com.murupi.comandas.data.repo.ImpressoraRepository
 import br.com.murupi.comandas.print.ServicoImpressao
@@ -14,9 +15,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+/** Totais do período para o cartão-resumo do histórico. */
+data class ResumoVendas(val totalCentavos: Long, val qtd: Int) {
+    val ticketMedioCentavos: Long get() = if (qtd == 0) 0L else totalCentavos / qtd
+}
+
+/** Dados da venda e produtos vendidos, usados na prévia compacta de cada linha do histórico. */
+data class VendaHistorico(val resumo: ComandaResumo, val itens: List<ItemComanda>)
 
 /** Histórico de vendas: contas fechadas, com impressão completa + saldo total. */
 class HistoricoViewModel(
@@ -25,8 +35,19 @@ class HistoricoViewModel(
     private val impressoras: ImpressoraRepository
 ) : ViewModel() {
 
-    val contas: StateFlow<List<ComandaResumo>> = repo.historico()
+    val contas: StateFlow<List<VendaHistorico>> = repo.historico()
+        .map { resumos ->
+            if (resumos.isEmpty()) emptyList()
+            else {
+                val porComanda = repo.itensDasComandas(resumos.map { it.comanda.id }).groupBy { it.comandaId }
+                resumos.map { resumo -> VendaHistorico(resumo, porComanda[resumo.comanda.id].orEmpty()) }
+            }
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val resumo: StateFlow<ResumoVendas> = repo.historico()
+        .map { lista -> ResumoVendas(lista.sumOf { it.totalCentavos }, lista.size) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ResumoVendas(0, 0))
 
     private val _eventos = Channel<Mensagem>(Channel.BUFFERED)
     val eventos: Flow<Mensagem> = _eventos.receiveAsFlow()

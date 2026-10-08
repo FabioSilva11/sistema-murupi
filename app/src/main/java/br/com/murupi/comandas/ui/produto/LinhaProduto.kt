@@ -14,6 +14,7 @@ sealed interface LinhaProduto {
     data class Grupo(
         val nome: String,
         val categoria: Categoria,
+        val opcoes: List<ProdutoItem>,
         val variantes: Int,
         val menorPrecoCentavos: Long?,
         val esgotado: Boolean,
@@ -93,6 +94,7 @@ object MontadorLinhas {
             linhas += LinhaProduto.Grupo(
                 nome = bloco.grupo,
                 categoria = categoria,
+                opcoes = bloco.itens.sortedWith(porNome),
                 variantes = bloco.itens.size,
                 menorPrecoCentavos = bloco.itens.map { it.produto }.filterNot { it.precoLivre }.minOfOrNull { it.precoCentavos },
                 esgotado = bloco.itens.all { it.produto.esgotado },

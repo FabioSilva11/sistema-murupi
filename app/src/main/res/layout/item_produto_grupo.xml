@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/margem_linha_produto"
-    android:layout_marginVertical="2dp"
+    android:layout_marginVertical="4dp"
     android:background="@drawable/fundo_item_produto"
     android:clickable="true"
     android:focusable="true"
-    android:minHeight="58dp"
+    android:elevation="1dp"
+    android:minHeight="64dp"
     android:orientation="horizontal">
 
     <View

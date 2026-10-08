@@ -22,8 +22,37 @@
             android:id="@+id/conteudo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:background="@drawable/fundo_item_produto"
+            android:elevation="1dp"
             android:orientation="vertical"
             android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_badge_blue"
+                    android:contentDescription="@null"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_settings" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="@string/titulo_configuracoes"
+                    android:textColor="@color/texto_primario"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutNome"
@@ -98,7 +127,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/salvar" />
+                android:text="@string/salvar"
+                app:icon="@drawable/ic_check"
+                app:iconGravity="textStart" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

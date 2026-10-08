@@ -6,6 +6,7 @@ import br.com.murupi.comandas.data.model.Impressora
 import br.com.murupi.comandas.data.model.ItemComanda
 import br.com.murupi.comandas.data.model.PapelImpressora
 import br.com.murupi.comandas.data.model.TipoComanda
+import br.com.murupi.comandas.data.model.formasPagamentoDescricao
 import br.com.murupi.comandas.data.model.rotuloImpressao
 import br.com.murupi.comandas.data.model.totalCentavos
 import br.com.murupi.comandas.util.DataHora
@@ -50,6 +51,49 @@ object Tickets {
         }
         t.separador('=')
         t.linha("Total de itens: ${linhas.sumOf { it.quantidade }}")
+        return t.cortar().bytes()
+    }
+
+    /** Atualização integral da estação: estado atual e cancelamentos em seção separada. */
+    fun atualizacaoProducao(
+        impressora: Impressora,
+        papel: PapelImpressora,
+        comanda: Comanda,
+        itensAtuais: List<ItemComanda>,
+        cancelamentos: List<ItemComanda>,
+        agora: Long = System.currentTimeMillis()
+    ): ByteArray {
+        val t = EscPosBuilder(impressora.colunas, impressora.removerAcentos)
+        t.alinhar(Alinhamento.CENTRO).negrito(true).linha(Restaurante.NOME)
+        t.tamanho(larguraDupla = true, alturaDupla = true).linha(papel.descricao.uppercase())
+        t.tamanho(larguraDupla = false, alturaDupla = false).linha("*** ATUALIZAÇÃO COMPLETA ***")
+        t.tamanho(larguraDupla = true, alturaDupla = true).linha(comanda.rotuloImpressao)
+        t.normal().linha(DataHora.completa(agora))
+        t.alinhar(Alinhamento.ESQUERDA).separador('=')
+        t.negrito(true).linha("PEDIDO ATUAL — CONFERIR ANTES DE PREPARAR").normal()
+        val linhas = consolidarProducao(itensAtuais)
+        if (linhas.isEmpty()) {
+            t.linha("Nenhum item ativo nesta estação")
+        } else {
+            linhas.forEach { item ->
+                val destaque = if (item.demanda) DESTAQUE_DEMANDA else ""
+                t.negrito(true).tamanho(larguraDupla = false, alturaDupla = true)
+                    .paragrafo("$destaque${item.quantidade}x ${item.nome}", recuo = " ".repeat(destaque.length + 3))
+                if (item.observacao.isNotEmpty()) {
+                    t.inverso(true).paragrafo("OBS: ${item.observacao.uppercase()}", recuo = "     ").inverso(false)
+                }
+                t.normal()
+            }
+        }
+        if (cancelamentos.isNotEmpty()) {
+            t.separador('!').negrito(true).linha("CANCELAMENTOS — NÃO PREPARAR").normal()
+            cancelamentos.forEach { item ->
+                t.inverso(true).paragrafo("CANCELADO: ${item.quantidade}x ${item.nome}").inverso(false)
+            }
+        }
+        t.separador('=')
+        t.linha("Itens ativos: ${linhas.sumOf { it.quantidade }}")
+        t.negrito(true).linha("NÃO REPREPARAR ITENS JÁ PRODUZIDOS").normal()
         return t.cortar().bytes()
     }
 
@@ -155,6 +199,43 @@ object Tickets {
         return t.joinToString("\n")
     }
 
+    /** Prévia em texto do ticket de atualização integral. */
+    fun atualizacaoProducaoTexto(
+        largura: Int,
+        papel: PapelImpressora,
+        comanda: Comanda,
+        itensAtuais: List<ItemComanda>,
+        cancelamentos: List<ItemComanda>,
+        agora: Long = System.currentTimeMillis()
+    ): String {
+        val linhas = consolidarProducao(itensAtuais)
+        val t = mutableListOf<String>()
+        t += centralizar(Restaurante.NOME, largura)
+        t += centralizar(papel.descricao.uppercase(), largura)
+        t += centralizar("*** ATUALIZAÇÃO COMPLETA ***", largura)
+        t += centralizar(comanda.rotuloImpressao, largura)
+        t += DataHora.completa(agora)
+        t += "=".repeat(largura)
+        t += "PEDIDO ATUAL — CONFERIR ANTES DE PREPARAR"
+        if (linhas.isEmpty()) t += "Nenhum item ativo nesta estação"
+        linhas.forEach { item ->
+            val destaque = if (item.demanda) DESTAQUE_DEMANDA else ""
+            t += TextoTicket.quebrar("$destaque${item.quantidade}x ${item.nome}", largura, " ".repeat(destaque.length + 3))
+            if (item.observacao.isNotEmpty()) t += TextoTicket.quebrar("OBS: ${item.observacao.uppercase()}", largura, "     ")
+        }
+        if (cancelamentos.isNotEmpty()) {
+            t += "!".repeat(largura)
+            t += "CANCELAMENTOS — NÃO PREPARAR"
+            cancelamentos.forEach { item ->
+                t += TextoTicket.quebrar("CANCELADO: ${item.quantidade}x ${item.nome}", largura)
+            }
+        }
+        t += "=".repeat(largura)
+        t += "Itens ativos: ${linhas.sumOf { it.quantidade }}"
+        t += "NÃO REPREPARAR ITENS JÁ PRODUZIDOS"
+        return t.joinToString("\n")
+    }
+
     /**
      * Versão em texto puro do espelho, para conferir na tela antes de imprimir.
      * Espelha [espelho]: itens com preço, total e valor por pessoa.
@@ -232,6 +313,9 @@ object Tickets {
                 t.linha("Entrega: ${comanda.endereco}")
             }
             t.duasColunas("Fechada:", DataHora.completa(comanda.fechadaEm ?: comanda.abertaEm))
+            comanda.formasPagamentoDescricao.takeIf { it.isNotEmpty() }?.let {
+                t.linhas(TextoTicket.quebrar("Pagamento: $it", largura))
+            }
             consolidarConta(itens).forEach { item ->
                 t.linhas(
                     TextoTicket.comValor(
@@ -241,7 +325,7 @@ object Tickets {
                     )
                 )
             }
-            val total = itens.sumOf { it.totalCentavos }
+            val total = comanda.totalPagoCentavos ?: itens.sumOf { it.totalCentavos }
             saldo += total
             t.negrito(true).duasColunas("TOTAL", Moeda.formatar(total)).normal()
             t.separador()

@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.Flow
 /** Lançamento maior que o estoque do produto. */
 class EstoqueInsuficienteException(val produto: String, val disponivel: Int) : Exception()
 
+enum class ResultadoCancelamentoItem { REMOVIDO_PENDENTE, CANCELADO_ENVIADO, NAO_ENCONTRADO }
+
 class ComandaRepository(private val db: AppDatabase) {
 
     private val comandaDao = db.comandaDao()
@@ -28,9 +30,18 @@ class ComandaRepository(private val db: AppDatabase) {
 
     fun observarItens(comandaId: Long): Flow<List<ItemComanda>> = itemDao.observarDaComanda(comandaId)
 
+    fun observarCancelamentosPendentes(comandaId: Long): Flow<List<ItemComanda>> =
+        itemDao.observarCancelamentosPendentes(comandaId)
+
     suspend fun comanda(id: Long): Comanda? = comandaDao.buscar(id)
 
     suspend fun itens(comandaId: Long): List<ItemComanda> = itemDao.listarDaComanda(comandaId)
+
+    suspend fun cancelamentosPendentes(comandaId: Long): List<ItemComanda> =
+        itemDao.listarCancelamentosPendentes(comandaId)
+
+    suspend fun itensDasComandas(comandaIds: List<Long>): List<ItemComanda> =
+        if (comandaIds.isEmpty()) emptyList() else itemDao.listarDasComandas(comandaIds)
 
     suspend fun resumosAbertosDaMesa(mesa: Int): List<ComandaResumo> = comandaDao.resumosAbertosDaMesa(mesa)
 
@@ -112,14 +123,37 @@ class ComandaRepository(private val db: AppDatabase) {
     /** Ajusta o estoque pela diferença de quantidade. */
     suspend fun atualizarItem(item: ItemComanda) = db.withTransaction {
         val anterior = itemDao.buscar(item.id) ?: return@withTransaction
+        if (anterior.cancelado) return@withTransaction
         movimentarEstoque(item.produtoId, item.quantidade - anterior.quantidade)
         itemDao.atualizar(item)
     }
 
-    /** Remove o item e devolve a quantidade ao estoque. */
-    suspend fun excluirItem(item: ItemComanda) = db.withTransaction {
-        movimentarEstoque(item.produtoId, -item.quantidade)
-        itemDao.excluir(item)
+    /**
+     * Remove fisicamente uma linha ainda não enviada. Depois do envio, mantém o registro como
+     * cancelado e cria um aviso pendente para a estação que recebeu o pedido.
+     */
+    suspend fun cancelarItem(item: ItemComanda): ResultadoCancelamentoItem = db.withTransaction {
+        val atual = itemDao.buscar(item.id) ?: return@withTransaction ResultadoCancelamentoItem.NAO_ENCONTRADO
+        val comanda = comandaDao.buscar(atual.comandaId)
+            ?: return@withTransaction ResultadoCancelamentoItem.NAO_ENCONTRADO
+        if (comanda.status != StatusComanda.ABERTA || atual.cancelado) {
+            return@withTransaction ResultadoCancelamentoItem.NAO_ENCONTRADO
+        }
+        if (atual.enviadoProducao) {
+            // O estoque já foi reservado para a produção: uma baixa enviada pode ter virado perda.
+            itemDao.atualizar(
+                atual.copy(
+                    cancelado = true,
+                    canceladoEm = System.currentTimeMillis(),
+                    cancelamentoPendenteImpressao = true
+                )
+            )
+            ResultadoCancelamentoItem.CANCELADO_ENVIADO
+        } else {
+            movimentarEstoque(atual.produtoId, -atual.quantidade)
+            itemDao.excluir(atual)
+            ResultadoCancelamentoItem.REMOVIDO_PENDENTE
+        }
     }
 
     /**
@@ -129,7 +163,7 @@ class ComandaRepository(private val db: AppDatabase) {
      */
     suspend fun dividirItem(item: ItemComanda) = db.withTransaction {
         val atual = itemDao.buscar(item.id) ?: return@withTransaction
-        if (atual.quantidade <= 1) return@withTransaction
+        if (atual.cancelado || atual.quantidade <= 1) return@withTransaction
         itemDao.atualizar(atual.copy(quantidade = 1))
         repeat(atual.quantidade - 1) {
             itemDao.inserir(atual.copy(id = 0, quantidade = 1, criadoEm = System.currentTimeMillis()))
@@ -170,14 +204,16 @@ class ComandaRepository(private val db: AppDatabase) {
     }
 
     /** Registra o pagamento e fecha a comanda; a mesa fica livre quando não houver outra aberta. */
-    suspend fun fecharComanda(comandaId: Long, forma: FormaPagamento, totalCentavos: Long) {
+    suspend fun fecharComanda(comandaId: Long, formas: List<FormaPagamento>, totalCentavos: Long) {
         val comanda = comandaDao.buscar(comandaId) ?: return
         if (comanda.status != StatusComanda.ABERTA) return
+        val formasUsadas = formas.distinct().ifEmpty { listOf(FormaPagamento.DINHEIRO) }
         comandaDao.atualizar(
             comanda.copy(
                 status = StatusComanda.FECHADA,
                 fechadaEm = System.currentTimeMillis(),
-                formaPagamento = forma,
+                formaPagamento = formasUsadas.first(),
+                formasPagamentoCsv = formasUsadas.joinToString(",") { it.name },
                 totalPagoCentavos = totalCentavos
             )
         )
@@ -187,13 +223,36 @@ class ComandaRepository(private val db: AppDatabase) {
         comandaDao.buscar(comandaId)?.let { comandaDao.excluir(it) }
     }
 
+    /** Apaga um pedido aberto somente antes do primeiro envio à produção e devolve seu estoque. */
+    suspend fun excluirPedidoNaoImpresso(comandaId: Long): Boolean = db.withTransaction {
+        val comanda = comandaDao.buscar(comandaId) ?: return@withTransaction false
+        if (comanda.status != StatusComanda.ABERTA) return@withTransaction false
+        val todosItens = itemDao.listarTodosDaComanda(comandaId)
+        if (todosItens.any { it.enviadoProducao }) return@withTransaction false
+        todosItens.filterNot { it.cancelado }.forEach { movimentarEstoque(it.produtoId, -it.quantidade) }
+        comandaDao.excluir(comanda)
+        true
+    }
+
+    /** Limpa comandas e histórico, liberando reservas de estoque de pedidos que ainda estavam abertos. */
+    suspend fun resetarPedidosEHistorico() = db.withTransaction {
+        comandaDao.listarAbertas().forEach { comanda ->
+            itemDao.listarDaComanda(comanda.id).forEach { item ->
+                movimentarEstoque(item.produtoId, -item.quantidade)
+            }
+        }
+        itemDao.excluirTodos()
+        comandaDao.excluirTodas()
+    }
+
     /** Reabre uma conta encerrada apenas para conferência; baixa paga não pode voltar à mesa. */
-    suspend fun reabrirComanda(comandaId: Long) = db.withTransaction {
-        val comanda = comandaDao.buscar(comandaId) ?: return@withTransaction
-        if (comanda.status != StatusComanda.FECHADA || comanda.formaPagamento != null) return@withTransaction
+    suspend fun reabrirComanda(comandaId: Long): Boolean = db.withTransaction {
+        val comanda = comandaDao.buscar(comandaId) ?: return@withTransaction false
+        if (comanda.status != StatusComanda.FECHADA || comanda.formaPagamento != null) return@withTransaction false
         comandaDao.atualizar(
             comanda.copy(status = StatusComanda.ABERTA, fechadaEm = null, totalPagoCentavos = null)
         )
+        true
     }
 
     /**

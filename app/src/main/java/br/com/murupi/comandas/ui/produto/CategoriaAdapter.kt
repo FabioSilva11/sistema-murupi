@@ -1,5 +1,7 @@
 package br.com.murupi.comandas.ui.produto
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -22,9 +24,11 @@ class CategoriaAdapter(
         val categoria = getItem(position)
         val cor = Cores.converter(categoria.cor)
         with(holder.b) {
-            card.setCardBackgroundColor(cor)
+            card.setCardBackgroundColor(Color.WHITE)
+            card.strokeColor = cor
+            viewCor.backgroundTintList = ColorStateList.valueOf(cor)
             textNome.text = categoria.nome
-            textNome.setTextColor(Cores.textoSobre(cor))
+            textNome.setTextColor(Color.rgb(35, 45, 60))
             card.setOnClickListener { aoTocar(categoria) }
         }
     }

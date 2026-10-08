@@ -14,6 +14,7 @@ import br.com.murupi.comandas.data.model.titulo
 import br.com.murupi.comandas.data.model.totalCentavos
 import br.com.murupi.comandas.data.repo.ComandaRepository
 import br.com.murupi.comandas.data.repo.EstoqueInsuficienteException
+import br.com.murupi.comandas.data.repo.ResultadoCancelamentoItem
 import br.com.murupi.comandas.print.ServicoImpressao
 import br.com.murupi.comandas.ui.common.Mensagem
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +31,8 @@ import kotlinx.coroutines.launch
 data class ComandaUiState(
     val carregado: Boolean = false,
     val comanda: Comanda? = null,
-    val itens: List<ItemComanda> = emptyList()
+    val itens: List<ItemComanda> = emptyList(),
+    val cancelamentosPendentes: List<ItemComanda> = emptyList()
 ) {
     val totalCentavos: Long get() = itens.sumOf { it.totalCentavos }
     val quantidadeItens: Int get() = itens.sumOf { it.quantidade }
@@ -41,6 +43,7 @@ sealed interface ComandaEvento {
     class Aviso(val mensagem: Mensagem) : ComandaEvento
     class Impressao(@StringRes val titulo: Int, val resultado: ServicoImpressao.Resultado) : ComandaEvento
     class AbrirComanda(val id: Long) : ComandaEvento
+    data object SolicitarPreviaProducao : ComandaEvento
 }
 
 /** Como a comanda deixou de existir/estar aberta, para a tela saber o que fazer ao fechar. */
@@ -56,8 +59,12 @@ class ComandaViewModel(
 ) : ViewModel() {
 
     val estado: StateFlow<ComandaUiState> =
-        combine(repo.observarComanda(comandaId), repo.observarItens(comandaId)) { comanda, itens ->
-            ComandaUiState(carregado = true, comanda = comanda, itens = itens)
+        combine(
+            repo.observarComanda(comandaId),
+            repo.observarItens(comandaId),
+            repo.observarCancelamentosPendentes(comandaId)
+        ) { comanda, itens, cancelamentos ->
+            ComandaUiState(carregado = true, comanda = comanda, itens = itens, cancelamentosPendentes = cancelamentos)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ComandaUiState())
 
     private val _imprimindo = MutableStateFlow(false)
@@ -70,9 +77,20 @@ class ComandaViewModel(
     var encerramento: Encerramento? = null
         private set
 
-    fun imprimirProducao(reimprimirTudo: Boolean) = imprimir(R.string.imprimir_producao) { comanda, itens ->
-        val alvo = if (reimprimirTudo) itens else itens.filterNot { it.enviadoProducao }
-        impressao.imprimirProducao(comanda, alvo, reimpressao = reimprimirTudo)
+    fun imprimirProducao(reimprimirTudo: Boolean) {
+        val titulo = if (estado.value.cancelamentosPendentes.isNotEmpty()) {
+            R.string.atualizacao_producao
+        } else {
+            R.string.imprimir_producao
+        }
+        imprimir(titulo) { comanda, itens ->
+            impressao.imprimirProducao(
+                comanda,
+                itens,
+                reimpressao = reimprimirTudo,
+                cancelamentosPendentes = repo.cancelamentosPendentes(comandaId)
+            )
+        }
     }
 
     fun imprimirEspelho() {
@@ -94,8 +112,12 @@ class ComandaViewModel(
     suspend fun previaProducao(reimprimirTudo: Boolean): List<ServicoImpressao.Previa> {
         val comanda = repo.comanda(comandaId) ?: return emptyList()
         val itens = repo.itens(comandaId)
-        val alvo = if (reimprimirTudo) itens else itens.filterNot { it.enviadoProducao }
-        return impressao.preverProducao(comanda, alvo, reimprimirTudo)
+        return impressao.preverProducao(
+            comanda,
+            itens,
+            reimprimirTudo,
+            repo.cancelamentosPendentes(comandaId)
+        )
     }
 
     /** Prévia do espelho para conferir na tela antes de aprovar a impressão. */
@@ -134,8 +156,14 @@ class ComandaViewModel(
 
     fun removerItem(item: ItemComanda) {
         viewModelScope.launch {
-            repo.excluirItem(item)
-            _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.item_removido, item.nome)))
+            when (repo.cancelarItem(item)) {
+                ResultadoCancelamentoItem.REMOVIDO_PENDENTE ->
+                    _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.item_removido, item.nome)))
+                ResultadoCancelamentoItem.CANCELADO_ENVIADO ->
+                    _eventos.send(ComandaEvento.SolicitarPreviaProducao)
+                ResultadoCancelamentoItem.NAO_ENCONTRADO ->
+                    _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.item_nao_pode_cancelar)))
+            }
         }
     }
 
@@ -165,7 +193,7 @@ class ComandaViewModel(
         }
     }
 
-    fun fecharComanda(forma: FormaPagamento, totalCentavos: Long) {
+    fun fecharComanda(formas: List<FormaPagamento>, totalCentavos: Long) {
         val comanda = estado.value.comanda ?: return
         viewModelScope.launch {
             val mesaFicaLivre = comanda.tipo == TipoComanda.MESA && outrasComandasDaMesa(comanda.mesa).isEmpty()
@@ -173,7 +201,7 @@ class ComandaViewModel(
                 if (mesaFicaLivre) Mensagem(R.string.comanda_paga_mesa_livre, comanda.numero, comanda.mesa)
                 else Mensagem(R.string.comanda_paga, comanda.titulo)
             )
-            repo.fecharComanda(comandaId, forma, totalCentavos)
+            repo.fecharComanda(comandaId, formas, totalCentavos)
         }
     }
 
@@ -186,11 +214,27 @@ class ComandaViewModel(
         }
     }
 
+    /** Exclui somente pedidos que ainda não tiveram nenhum item enviado à produção. */
+    fun excluirPedidoNaoImpresso() {
+        val comanda = estado.value.comanda ?: return
+        viewModelScope.launch {
+            encerramento = Encerramento.Aviso(Mensagem(R.string.pedido_excluido, comanda.titulo))
+            if (!repo.excluirPedidoNaoImpresso(comandaId)) {
+                encerramento = null
+                _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.pedido_nao_pode_excluir)))
+            }
+        }
+    }
+
     fun reabrirComanda() {
         viewModelScope.launch {
             val titulo = estado.value.comanda?.titulo.orEmpty()
-            repo.reabrirComanda(comandaId)
-            _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.conta_reaberta, titulo)))
+            val reabriu = repo.reabrirComanda(comandaId)
+            if (reabriu) {
+                _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.conta_reaberta, titulo)))
+            } else {
+                _eventos.send(ComandaEvento.Aviso(Mensagem(R.string.conta_paga_nao_reabre, titulo)))
+            }
         }
     }
 

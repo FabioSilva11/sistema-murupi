@@ -8,10 +8,11 @@
     android:layout_margin="4dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/mesa_livre"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="18dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    app:cardElevation="1dp"
+    app:strokeColor="@color/murupi_blue_claro"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +25,7 @@
             android:id="@+id/textNumero"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/mesa_livre"
             android:textSize="28sp"
             android:textStyle="bold"
             tools:text="34" />
@@ -35,8 +36,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:maxLines="2"
-            android:textColor="@color/white"
-            android:textSize="11sp"
+            android:textColor="@color/texto_secundario"
+            android:textSize="12sp"
             tools:text="R$ 52,00" />
     </LinearLayout>
 
