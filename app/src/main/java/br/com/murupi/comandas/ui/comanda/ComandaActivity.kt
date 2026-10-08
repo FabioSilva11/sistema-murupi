@@ -21,6 +21,7 @@ import br.com.murupi.comandas.data.model.PoliticaReabertura
 import br.com.murupi.comandas.data.model.StatusComanda
 import br.com.murupi.comandas.data.model.numero
 import br.com.murupi.comandas.databinding.ActivityComandaBinding
+import br.com.murupi.comandas.databinding.BottomSheetPagamentoBinding
 import br.com.murupi.comandas.databinding.DialogItemBinding
 import br.com.murupi.comandas.ui.common.BaseActivity
 import br.com.murupi.comandas.ui.common.FormularioItem
@@ -34,6 +35,8 @@ import br.com.murupi.comandas.ui.impressora.ImpressorasActivity
 import br.com.murupi.comandas.ui.inicio.InicioActivity
 import br.com.murupi.comandas.ui.produto.IncluirProdutoActivity
 import br.com.murupi.comandas.util.Moeda
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
@@ -420,19 +423,31 @@ class ComandaActivity : BaseActivity() {
             return
         }
 
-        val formas = FormaPagamento.values()
-        var formaSelecionada = FormaPagamento.DINHEIRO
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.pagamento_comanda, comanda.tituloBarra(this)))
-            .setMessage(getString(R.string.pagamento_total_e_forma, Moeda.formatar(estado.totalCentavos)))
-            .setSingleChoiceItems(formas.map { it.descricao }.toTypedArray(), 0) { _, indice ->
-                formaSelecionada = formas[indice]
+        abrirPagamento(comanda.tituloBarra(this), estado.totalCentavos)
+    }
+
+    /** Aprovação do pagamento: Bottom Sheet com total em destaque e forma selecionável. */
+    private fun abrirPagamento(tituloComanda: String, totalCentavos: Long) {
+        val b = BottomSheetPagamentoBinding.inflate(layoutInflater)
+        val dialogo = BottomSheetDialog(this)
+        dialogo.setContentView(b.root)
+        dialogo.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        b.root.aplicarInsets(base = true)
+
+        b.textTitulo.text = getString(R.string.pagamento_comanda, tituloComanda)
+        b.textTotal.text = Moeda.formatar(totalCentavos)
+        b.btnCancelar.setOnClickListener { dialogo.dismiss() }
+        b.btnConfirmar.setOnClickListener {
+            val forma = when (b.grupoFormas.checkedRadioButtonId) {
+                R.id.radioDebito -> FormaPagamento.DEBITO
+                R.id.radioCredito -> FormaPagamento.CREDITO
+                R.id.radioPix -> FormaPagamento.PIX
+                else -> FormaPagamento.DINHEIRO
             }
-            .setNegativeButton(R.string.cancelar, null)
-            .setPositiveButton(R.string.confirmar_pagamento) { _, _ ->
-                viewModel.fecharComanda(listOf(formaSelecionada), estado.totalCentavos)
-            }
-            .show()
+            viewModel.fecharComanda(listOf(forma), totalCentavos)
+            dialogo.dismiss()
+        }
+        dialogo.show()
     }
 
     companion object {
