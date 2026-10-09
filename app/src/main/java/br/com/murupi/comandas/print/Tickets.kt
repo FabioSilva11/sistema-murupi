@@ -8,6 +8,7 @@ import br.com.murupi.comandas.data.model.PapelImpressora
 import br.com.murupi.comandas.data.model.TipoComanda
 import br.com.murupi.comandas.data.model.formasPagamentoDescricao
 import br.com.murupi.comandas.data.model.rotuloImpressao
+import br.com.murupi.comandas.data.model.rotuloPapeis
 import br.com.murupi.comandas.data.model.totalCentavos
 import br.com.murupi.comandas.util.DataHora
 import br.com.murupi.comandas.util.Moeda
@@ -154,7 +155,7 @@ object Tickets {
         t.normal().linha(Restaurante.NOME).alinhar(Alinhamento.ESQUERDA).separador()
         t.duasColunas("Impressora:", impressora.nome)
         t.duasColunas("Endereço:", "${impressora.ip}:${impressora.porta}")
-        t.duasColunas("Papel:", impressora.papel.descricao)
+        t.duasColunas("Papel:", impressora.rotuloPapeis)
         t.duasColunas("Largura:", "${impressora.colunas} colunas")
         t.duasColunas("Data:", DataHora.completa(agora))
         t.separador()

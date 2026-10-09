@@ -56,7 +56,8 @@ object MontadorLinhas {
 
     /**
      * Monta a lista em ordem alfabética. Com [agrupar], produtos do mesmo grupo viram uma linha
-     * só, que mostra as variantes quando a chave dela está em [gruposAbertos].
+     * só, que mostra as variantes do menor para o maior preço quando a chave dela está em
+     * [gruposAbertos].
      */
     fun montar(
         itens: List<ProdutoItem>,
@@ -68,6 +69,11 @@ object MontadorLinhas {
     ): List<LinhaProduto> {
         val linhas = mutableListOf<LinhaProduto>()
         val porNome = Comparator<ProdutoItem> { a, b -> ordemAlfabetica.compare(a.produto.nome, b.produto.nome) }
+        // Dentro do grupo, o menor valor vem primeiro (ex.: 250ml, 300ml, 750ml, 1L).
+        val porPreco = Comparator<ProdutoItem> { a, b ->
+            val preco = a.produto.precoCentavos.compareTo(b.produto.precoCentavos)
+            if (preco != 0) preco else ordemAlfabetica.compare(a.produto.nome, b.produto.nome)
+        }
 
         fun adicionar(item: ProdutoItem, recuado: Boolean) {
             val linha = LinhaProduto.Item(item, recuado, preparoAberto == item.produto.id, mostrarCategoria)
@@ -94,14 +100,14 @@ object MontadorLinhas {
             linhas += LinhaProduto.Grupo(
                 nome = bloco.grupo,
                 categoria = categoria,
-                opcoes = bloco.itens.sortedWith(porNome),
+                opcoes = bloco.itens.sortedWith(porPreco),
                 variantes = bloco.itens.size,
                 menorPrecoCentavos = bloco.itens.map { it.produto }.filterNot { it.precoLivre }.minOfOrNull { it.precoCentavos },
                 esgotado = bloco.itens.all { it.produto.esgotado },
                 expandido = expandido,
                 descricao = bloco.itens.firstOrNull()?.produto?.descricao.orEmpty()
             )
-            if (expandido) bloco.itens.sortedWith(porNome).forEach { adicionar(it, recuado = true) }
+            if (expandido) bloco.itens.sortedWith(porPreco).forEach { adicionar(it, recuado = true) }
         }
         return linhas
     }

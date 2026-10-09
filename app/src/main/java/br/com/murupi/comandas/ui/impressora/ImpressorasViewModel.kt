@@ -29,7 +29,7 @@ class ImpressorasViewModel(
 
     /** Papéis obrigatórios ainda sem impressora ativa (refrigerantes é opcional). */
     val papeisFaltando: Flow<List<PapelImpressora>> = impressoras.map { lista ->
-        val ativos = lista.filter { it.ativa }.map { it.papel }.toSet()
+        val ativos = lista.filter { it.ativa }.flatMap { it.papeis }.toSet()
         PAPEIS_OBRIGATORIOS.filter { it !in ativos }
     }
 

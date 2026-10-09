@@ -24,7 +24,7 @@ class CatalogoJsonTest {
     fun respeita_os_totais_do_json() {
         assertEquals(15, catalogo.totalCategorias)
         assertEquals(127, catalogo.totalProdutos)
-        assertEquals(364, catalogo.totalVariacoes)
+        assertEquals(390, catalogo.totalVariacoes)
         assertEquals(15, catalogo.categorias.size)
         assertEquals(127, catalogo.produtos.size)
     }
@@ -35,13 +35,13 @@ class CatalogoJsonTest {
         val comVariacoes = catalogo.produtos.filter { it.comVariacoes }
         assertEquals(39, simples.size)
         assertEquals(88, comVariacoes.size)
-        assertEquals(364, comVariacoes.sumOf { it.variacoes.size })
+        assertEquals(390, comVariacoes.sumOf { it.variacoes.size })
     }
 
     @Test
-    fun expande_para_403_itens_de_seed() {
+    fun expande_para_429_itens_de_seed() {
         val itens = catalogo.expandir()
-        assertEquals(403, itens.size)
+        assertEquals(429, itens.size)
     }
 
     @Test
@@ -101,15 +101,33 @@ class CatalogoJsonTest {
         // O id "Acerola" reúne Suco de Acerola (SUCOS) + Guaraná Acerola (GUARANÁS SIMPLES).
         val acerola = catalogo.produtos.single { it.id == "Acerola" }
         assertEquals("Suco de Acerola", acerola.nome)
-        assertEquals(8, acerola.variacoes.size)
+        assertEquals(10, acerola.variacoes.size)
         val sucos = acerola.variacoes.filter { it.categoria == "SUCOS" }
         val guaranas = acerola.variacoes.filter { it.categoria == "GUARANÁS SIMPLES" }
-        assertEquals(4, sucos.size)
+        assertEquals(6, sucos.size)
         assertEquals(4, guaranas.size)
         assertEquals(
-            listOf(500L, 600L, 800L, 1000L),
+            listOf(500L, 600L, 800L, 1000L, 1500L, 2000L),
             sucos.map { it.precoCentavos }
         )
+    }
+
+    @Test
+    fun sucos_tem_jarra_750ml_e_1l() {
+        val sucos = catalogo.expandir().filter { it.categoria == "SUCOS" }
+        val jarras750 = sucos.filter { it.nome.endsWith(" 750ml") }
+        val jarras1l = sucos.filter { it.nome.endsWith(" 1L") }
+        assertEquals(13, jarras750.size)
+        assertEquals(13, jarras1l.size)
+        assertTrue(jarras750.all { it.precoCentavos == 1500L })
+        assertTrue(jarras1l.all { it.precoCentavos == 2000L })
+    }
+
+    @Test
+    fun sobremesas_custam_4_reais() {
+        val sobremesas = catalogo.expandir().filter { it.categoria == "SOBREMESAS" }
+        assertEquals(7, sobremesas.size)
+        assertTrue(sobremesas.all { it.precoCentavos == 400L })
     }
 
     @Test

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.Impressora
+import br.com.murupi.comandas.data.model.rotuloPapeis
 import br.com.murupi.comandas.databinding.ItemImpressoraBinding
 import br.com.murupi.comandas.util.DataHora
 
@@ -26,9 +27,7 @@ class ImpressoraAdapter(
         with(holder.b) {
             textNome.text = impressora.nome
             textEndereco.text = contexto.getString(R.string.ip_porta, impressora.ip, impressora.porta)
-            textPapel.text = contexto.getString(
-                R.string.papel_detalhe, impressora.papel.descricao.uppercase(), impressora.papel.detalhe
-            )
+            textPapel.text = impressora.rotuloPapeis.uppercase()
             textDetalhes.text = listOfNotNull(
                 contexto.getString(
                     if (impressora.colunas == Impressora.COLUNAS_58MM) R.string.largura_58 else R.string.largura_80

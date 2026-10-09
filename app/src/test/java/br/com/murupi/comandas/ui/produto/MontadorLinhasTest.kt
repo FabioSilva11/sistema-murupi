@@ -48,6 +48,20 @@ class MontadorLinhasTest {
     }
 
     @Test
+    fun variantes_saem_do_menor_para_o_maior_preco() {
+        val jarra750 = suco(5, "Acerola", "750ml", 1500)
+        val jarra1l = suco(6, "Acerola", "1L", 2000)
+        val base250 = suco(7, "Acerola", "250ml", 500)
+        val linhas = MontadorLinhas.montar(
+            listOf(jarra1l, base250, jarra750),
+            setOf(LinhaProduto.chaveGrupo(sucos.id, "Acerola")), null,
+            agrupar = true, mostrarCategoria = false, ordemAlfabetica = ordem
+        )
+        val itens = linhas.filterIsInstance<LinhaProduto.Item>()
+        assertEquals(listOf(base250, jarra750, jarra1l), itens.map { it.item })
+    }
+
+    @Test
     fun tamanho_aberto_mostra_as_opcoes_de_preparo_logo_abaixo() {
         val linhas = montar(grupos = setOf(LinhaProduto.chaveGrupo(sucos.id, "Graviola")), preparo = graviola300.produto.id)
         val indice = linhas.indexOfFirst { it is LinhaProduto.Item && it.item == graviola300 }

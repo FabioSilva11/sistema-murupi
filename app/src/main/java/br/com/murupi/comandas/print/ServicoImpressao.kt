@@ -46,7 +46,7 @@ class ServicoImpressao(
 
         for (grupo in agruparProducao(itens, cancelamentosPendentes, reimpressao)) {
             val papel = grupo.papel
-            val destinos = impressoras.filter { it.papel == papel }
+            val destinos = impressoras.filter { papel in it.papeis }
             if (destinos.isEmpty()) {
                 semImpressora += papel
                 continue
@@ -74,7 +74,7 @@ class ServicoImpressao(
     }
 
     suspend fun imprimirEspelho(comanda: Comanda, itens: List<ItemComanda>): Resultado {
-        val destinos = impressoraDao.listarAtivas().filter { it.papel == PapelImpressora.ESPELHO }
+        val destinos = impressoraDao.listarAtivas().filter { PapelImpressora.ESPELHO in it.papeis }
         if (destinos.isEmpty()) return Resultado(papeisSemImpressora = listOf(PapelImpressora.ESPELHO))
         return Resultado(destinos.map { Envio(it, enviar(it, Tickets.espelho(it, comanda, itens))) })
     }
@@ -93,7 +93,7 @@ class ServicoImpressao(
         val ativas = impressoraDao.listarAtivas()
         return agruparProducao(itens, cancelamentosPendentes, reimpressao).map { grupo ->
             val papel = grupo.papel
-            val destinos = ativas.filter { it.papel == papel }
+            val destinos = ativas.filter { papel in it.papeis }
             val largura = destinos.firstOrNull()?.colunas ?: Impressora.COLUNAS_58MM
             val ordenados = grupo.itensAtuais.sortedBy { RoteadorImpressao.ordemNoTicket(it.setor) }
             Previa(
@@ -140,7 +140,7 @@ class ServicoImpressao(
 
     /** Texto do espelho, para conferir na tela antes de aprovar. */
     suspend fun preverEspelho(comanda: Comanda, itens: List<ItemComanda>): Previa {
-        val destinos = impressoraDao.listarAtivas().filter { it.papel == PapelImpressora.ESPELHO }
+        val destinos = impressoraDao.listarAtivas().filter { PapelImpressora.ESPELHO in it.papeis }
         val largura = destinos.firstOrNull()?.colunas ?: Impressora.COLUNAS_58MM
         return Previa(
             papel = PapelImpressora.ESPELHO.descricao,

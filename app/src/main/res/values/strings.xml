@@ -270,6 +270,8 @@
     <string name="ip_invalido">IP inválido (ex.: 192.168.0.50).</string>
     <string name="porta_invalida">Porta inválida.</string>
     <string name="papel_impressora">Papel da impressora</string>
+    <string name="papeis_impressora">Papéis da impressora</string>
+    <string name="informe_papel">Escolha ao menos um papel.</string>
     <string name="papel_espelho">Espelho — conta com preço e total</string>
     <string name="papel_cozinha">Cozinha — produção sem preço (pratos e bebidas)</string>
     <string name="papel_sucos">Sucos — só sucos, sem preço</string>

@@ -13,6 +13,7 @@ import br.com.murupi.comandas.ui.common.BaseActivity
 import br.com.murupi.comandas.ui.common.aplicarInsets
 import br.com.murupi.comandas.ui.common.coletar
 import br.com.murupi.comandas.ui.common.viewModelsDoApp
+import br.com.murupi.comandas.data.model.rotuloPapeis
 import br.com.murupi.comandas.data.model.titulo
 import br.com.murupi.comandas.util.Moeda
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -88,7 +89,7 @@ class HistoricoActivity : BaseActivity() {
                 avisar(R.string.sem_impressora_historico)
                 return@launch
             }
-            val nomes = ativas.map { "${it.nome} (${it.papel.descricao})" }.toTypedArray()
+            val nomes = ativas.map { "${it.nome} (${it.rotuloPapeis})" }.toTypedArray()
             MaterialAlertDialogBuilder(this@HistoricoActivity)
                 .setTitle(R.string.escolher_impressora)
                 .setItems(nomes) { _, indice -> viewModel.imprimirHistorico(ativas[indice]) }

@@ -10,7 +10,8 @@ data class Impressora(
     val nome: String,
     val ip: String,
     val porta: Int = PORTA_PADRAO,
-    val papel: PapelImpressora,
+    /** Papéis que saem nesta impressora (ex.: cozinha + sucos numa casa com 1 impressora). */
+    val papeis: Set<PapelImpressora> = emptySet(),
     /** Caracteres por linha: 48 para bobina de 80 mm, 32 para 58 mm. */
     val colunas: Int = COLUNAS_80MM,
     /** Muitas térmicas imprimem lixo em letras acentuadas; sem acento é o mais seguro. */
@@ -25,3 +26,8 @@ data class Impressora(
         const val COLUNAS_58MM = 32
     }
 }
+
+/** Rótulo dos papéis para telas e tickets (ex.: "Cozinha + Sucos"). */
+val Impressora.rotuloPapeis: String
+    get() = if (papeis.isEmpty()) "—"
+    else papeis.sorted().joinToString(" + ") { it.descricao }

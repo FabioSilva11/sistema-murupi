@@ -192,7 +192,6 @@ object CardapioSeed {
                     .filter { it !in novos }
                 if (obsoletas.isNotEmpty()) produtoDao.excluirPorNomes(categoriaId, obsoletas)
             }
-            // Renomeia provisórios antigos ("Suco Especial 046") para o padrão atual ("Suco 046").
             if (nome == "SUCOS ESPECIAIS") {
                 produtoDao.listarPorCategoria(categoriaId)
                     .filter { it.nome.startsWith("Suco Especial ") }
@@ -200,7 +199,13 @@ object CardapioSeed {
                         produtoDao.atualizar(antigo.copy(nome = antigo.nome.replace("Suco Especial ", "Suco ")))
                     }
             }
-            val existentes = produtoDao.listarPorCategoria(categoriaId).map { it.nome }.toSet()
+            val atuais = produtoDao.listarPorCategoria(categoriaId)
+            // Preço do JSON vale: corrige quem está divergente (ex.: sobremesas 0 -> R$ 4).
+            // Estoque, disponibilidade e múltiplo são estado operacional e ficam preservados.
+            val precoPorNome = seeds.associate { it.nome to it.precoCentavos }
+            atuais.filter { precoPorNome[it.nome] != null && it.precoCentavos != precoPorNome[it.nome] }
+                .forEach { produtoDao.atualizar(it.copy(precoCentavos = precoPorNome[it.nome]!!)) }
+            val existentes = atuais.map { it.nome }.toSet()
             val faltantes = seeds.filter { it.nome !in existentes }
             if (faltantes.isNotEmpty()) {
                 produtoDao.inserirTodos(faltantes.map { it.paraProduto(categoriaId) })

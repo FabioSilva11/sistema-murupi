@@ -70,34 +70,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/papel_impressora"
+            android:text="@string/papeis_impressora"
             android:textColor="@color/texto_primario"
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <RadioGroup
-            android:id="@+id/grupoPapel"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkEspelho"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/papel_espelho" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/radioEspelho"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/papel_espelho" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkCozinha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/papel_cozinha" />
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/radioCozinha"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/papel_cozinha" />
-
-            <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/radioSucos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/papel_sucos" />
-        </RadioGroup>
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/checkSucos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/papel_sucos" />
 
         <TextView
             android:layout_width="wrap_content"

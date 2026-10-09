@@ -8,7 +8,12 @@ import kotlinx.coroutines.flow.map
 class ImpressoraRepository(private val dao: ImpressoraDao) {
 
     fun impressoras(): Flow<List<Impressora>> = dao.observarTodas().map { lista ->
-        lista.sortedWith(compareBy({ it.papel.ordinal }, { it.nome.lowercase() }))
+        lista.sortedWith(
+            compareBy(
+                { it.papeis.minOfOrNull { papel -> papel.ordinal } ?: Int.MAX_VALUE },
+                { it.nome.lowercase() }
+            )
+        )
     }
 
     suspend fun salvar(impressora: Impressora) {

@@ -20,7 +20,10 @@ object ItensDeTeste {
     val refrigerante = item(3, "Refrigerante Lata", "BEBIDAS RESTAURANTE", Setor.REFRIGERANTES, quantidade = 2, preco = 500)
 
     fun impressora(papel: PapelImpressora, colunas: Int = Impressora.COLUNAS_80MM) =
-        Impressora(id = 1, nome = papel.descricao, ip = "192.168.0.50", papel = papel, colunas = colunas)
+        Impressora(id = 1, nome = papel.descricao, ip = "192.168.0.50", papeis = setOf(papel), colunas = colunas)
+
+    fun impressoraMultipla(vararg papeis: PapelImpressora) =
+        Impressora(id = 1, nome = "Única", ip = "192.168.0.50", papeis = papeis.toSet())
 
     private fun item(
         id: Long,

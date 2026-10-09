@@ -86,11 +86,13 @@ class ImpressorasActivity : BaseActivity() {
     /** Cadastro manual ou edição. [ipSugerido] vem da busca na rede. */
     private fun editar(impressora: Impressora?, ipSugerido: String? = null) {
         val b = DialogImpressoraBinding.inflate(layoutInflater)
-        val papelInicial = impressora?.papel ?: sugerirPapel()
+        val papeisIniciais = impressora?.papeis ?: sugerirPapeis()
         b.editNome.setText(impressora?.nome)
         b.editIp.setText(impressora?.ip ?: ipSugerido)
         b.editPorta.setText((impressora?.porta ?: Impressora.PORTA_PADRAO).toString())
-        b.grupoPapel.check(radioDoPapel(papelInicial))
+        b.checkEspelho.isChecked = PapelImpressora.ESPELHO in papeisIniciais
+        b.checkCozinha.isChecked = PapelImpressora.COZINHA in papeisIniciais
+        b.checkSucos.isChecked = PapelImpressora.SUCOS in papeisIniciais
         b.grupoLargura.check(if (impressora?.colunas == Impressora.COLUNAS_58MM) R.id.radio58 else R.id.radio80)
         b.checkSemAcentos.isChecked = impressora?.removerAcentos ?: true
         b.switchAtiva.isChecked = impressora?.ativa ?: true
@@ -115,20 +117,29 @@ class ImpressorasActivity : BaseActivity() {
                 b.layoutPorta.error = getString(R.string.porta_invalida)
                 return@aoConfirmar false
             }
-            val papel = papelDoRadio(b.grupoPapel.checkedRadioButtonId)
-            val nome = b.editNome.text?.toString().orEmpty().trim().ifEmpty { papel.descricao }
+            val papeis = buildSet {
+                if (b.checkEspelho.isChecked) add(PapelImpressora.ESPELHO)
+                if (b.checkCozinha.isChecked) add(PapelImpressora.COZINHA)
+                if (b.checkSucos.isChecked) add(PapelImpressora.SUCOS)
+            }
+            if (papeis.isEmpty()) {
+                avisar(R.string.informe_papel)
+                return@aoConfirmar false
+            }
+            val nome = b.editNome.text?.toString().orEmpty().trim()
+                .ifEmpty { papeis.sorted().joinToString(" + ") { it.descricao } }
             val colunas = if (b.grupoLargura.checkedRadioButtonId == R.id.radio58) {
                 Impressora.COLUNAS_58MM
             } else {
                 Impressora.COLUNAS_80MM
             }
-            val base = impressora ?: Impressora(nome = nome, ip = ip, papel = papel)
+            val base = impressora ?: Impressora(nome = nome, ip = ip, papeis = papeis)
             viewModel.salvar(
                 base.copy(
                     nome = nome,
                     ip = ip,
                     porta = porta,
-                    papel = papel,
+                    papeis = papeis,
                     colunas = colunas,
                     removerAcentos = b.checkSemAcentos.isChecked,
                     ativa = b.switchAtiva.isChecked
@@ -139,22 +150,11 @@ class ImpressorasActivity : BaseActivity() {
         dialogo.show()
     }
 
-    /** Para uma impressora nova, sugere o primeiro papel que ainda não tem impressora. */
-    private fun sugerirPapel(): PapelImpressora {
-        val usados = viewModel.impressoras.value.map { it.papel }.toSet()
-        return PapelImpressora.entries.firstOrNull { it !in usados } ?: PapelImpressora.COZINHA
-    }
-
-    private fun radioDoPapel(papel: PapelImpressora): Int = when (papel) {
-        PapelImpressora.ESPELHO -> R.id.radioEspelho
-        PapelImpressora.COZINHA -> R.id.radioCozinha
-        PapelImpressora.SUCOS -> R.id.radioSucos
-    }
-
-    private fun papelDoRadio(id: Int): PapelImpressora = when (id) {
-        R.id.radioEspelho -> PapelImpressora.ESPELHO
-        R.id.radioSucos -> PapelImpressora.SUCOS
-        else -> PapelImpressora.COZINHA
+    /** Para uma impressora nova, sugere os papéis obrigatórios ainda sem impressora ativa. */
+    private fun sugerirPapeis(): Set<PapelImpressora> {
+        val cobertos = viewModel.impressoras.value.filter { it.ativa }.flatMap { it.papeis }.toSet()
+        val faltando = PapelImpressora.entries.filter { it !in cobertos }.toSet()
+        return faltando.ifEmpty { setOf(PapelImpressora.COZINHA) }
     }
 
     private fun confirmarExclusao(impressora: Impressora) {

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import br.com.murupi.comandas.data.model.Categoria
@@ -15,9 +16,10 @@ import br.com.murupi.comandas.data.model.Produto
 
 @Database(
     entities = [Categoria::class, Produto::class, Comanda::class, ItemComanda::class, Impressora::class, ConfigRestaurante::class],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
+@TypeConverters(Conversores::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun categoriaDao(): CategoriaDao
@@ -125,6 +127,40 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Versão 9: impressora com vários papéis (ex.: cozinha + sucos numa casa
+         * com 1 impressora). Recria a tabela para funcionar em SQLite antigos
+         * sem DROP COLUMN, copiando o papel único para a nova coluna.
+         */
+        val MIGRACAO_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE impressoras_nova (
+                        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        nome TEXT NOT NULL,
+                        ip TEXT NOT NULL,
+                        porta INTEGER NOT NULL,
+                        papeis TEXT NOT NULL DEFAULT '',
+                        colunas INTEGER NOT NULL,
+                        removerAcentos INTEGER NOT NULL,
+                        ativa INTEGER NOT NULL,
+                        criadaEm INTEGER NOT NULL,
+                        ultimoUsoEm INTEGER
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    "INSERT INTO impressoras_nova " +
+                        "(id, nome, ip, porta, papeis, colunas, removerAcentos, ativa, criadaEm, ultimoUsoEm) " +
+                        "SELECT id, nome, ip, porta, papel, colunas, removerAcentos, ativa, criadaEm, ultimoUsoEm " +
+                        "FROM impressoras"
+                )
+                db.execSQL("DROP TABLE impressoras")
+                db.execSQL("ALTER TABLE impressoras_nova RENAME TO impressoras")
+            }
+        }
+
         fun criar(context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, NOME_ARQUIVO)
                 .addMigrations(
@@ -134,7 +170,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRACAO_4_5,
                     MIGRACAO_5_6,
                     MIGRACAO_6_7,
-                    MIGRACAO_7_8
+                    MIGRACAO_7_8,
+                    MIGRACAO_8_9
                 )
                 .build()
     }
