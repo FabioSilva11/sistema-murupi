@@ -2,4 +2,5 @@
 <resources>
     <integer name="colunas_mesas">6</integer>
     <integer name="colunas_categorias">4</integer>
+    <integer name="colunas_historico">3</integer>
 </resources>

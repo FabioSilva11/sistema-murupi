@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.data.model.ComandaResumo
+import br.com.murupi.comandas.data.model.FormaPagamento
 import br.com.murupi.comandas.data.model.Impressora
 import br.com.murupi.comandas.data.model.ItemComanda
 import br.com.murupi.comandas.data.repo.ComandaRepository
@@ -48,6 +49,15 @@ class HistoricoViewModel(
     val resumo: StateFlow<ResumoVendas> = repo.historico()
         .map { lista -> ResumoVendas(lista.sumOf { it.totalCentavos }, lista.size) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ResumoVendas(0, 0))
+
+    /** Total por forma de pagamento, na ordem fixa (Dinheiro, Débito, Crédito, PIX). */
+    val porForma: StateFlow<List<Pair<FormaPagamento, Long>>> = contas
+        .map { vendas ->
+            val totais = vendas.groupBy { it.resumo.comanda.formaPagamento }
+                .mapValues { (_, lista) -> lista.sumOf { it.resumo.totalCentavos } }
+            FormaPagamento.entries.map { forma -> forma to (totais[forma] ?: 0L) }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _eventos = Channel<Mensagem>(Channel.BUFFERED)
     val eventos: Flow<Mensagem> = _eventos.receiveAsFlow()

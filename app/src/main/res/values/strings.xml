@@ -19,6 +19,8 @@
     <string name="total_vendido">Total vendido</string>
     <string name="vendas_titulo">Vendas</string>
     <string name="ticket_medio">Ticket médio</string>
+    <string name="analises">Análises</string>
+    <string name="por_forma_pagamento">Por forma de pagamento</string>
     <string name="excluir_venda_historico">Excluir venda do histórico</string>
     <string name="excluir_venda_historico_pergunta">Excluir permanentemente a venda %1$s? Esta ação também remove os itens da conta.</string>
     <string name="imprimir_historico">Imprimir histórico</string>

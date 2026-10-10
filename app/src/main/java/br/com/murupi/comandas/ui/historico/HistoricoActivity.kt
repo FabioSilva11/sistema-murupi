@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import br.com.murupi.comandas.R
 import br.com.murupi.comandas.databinding.ActivityHistoricoBinding
 import br.com.murupi.comandas.ui.comanda.ComandaActivity
@@ -39,7 +39,7 @@ class HistoricoActivity : BaseActivity() {
         setContentView(binding.root)
         configurarBarra(binding.barra, voltar = true)
         binding.recycler.aplicarInsets(base = true)
-        binding.recycler.layoutManager = LinearLayoutManager(this)
+        binding.recycler.layoutManager = GridLayoutManager(this, resources.getInteger(R.integer.colunas_historico))
         binding.recycler.adapter = adapter
 
         coletar {
@@ -48,6 +48,7 @@ class HistoricoActivity : BaseActivity() {
                     adapter.submitList(lista) { invalidateOptionsMenu() }
                     binding.textVazio.isVisible = lista.isEmpty()
                     binding.cardResumo.isVisible = lista.isNotEmpty()
+                    binding.cardAnalises.isVisible = lista.isNotEmpty()
                 }
             }
             launch {
@@ -59,8 +60,64 @@ class HistoricoActivity : BaseActivity() {
                     binding.textTicketMedio.text = Moeda.formatar(resumo.ticketMedioCentavos)
                 }
             }
+            launch {
+                viewModel.porForma.collect { porForma -> mostrarGraficoFormas(porForma) }
+            }
             launch { viewModel.eventos.collect { avisar(it) } }
         }
+    }
+
+    /** Gráfico de linhas do total por forma de pagamento (MPAndroidChart). */
+    private fun mostrarGraficoFormas(porForma: List<Pair<br.com.murupi.comandas.data.model.FormaPagamento, Long>>) {
+        val grafico = binding.graficoFormas
+        val rotulos = porForma.map { (forma, _) -> rotuloCurtoForma(forma) }
+        val entradas = porForma.mapIndexed { indice, (_, total) ->
+            com.github.mikephil.charting.data.Entry(indice.toFloat(), total.toFloat())
+        }
+        val conjunto = com.github.mikephil.charting.data.LineDataSet(entradas, null).apply {
+            color = getColor(R.color.murupi_blue)
+            setCircleColor(getColor(R.color.murupi_blue))
+            circleRadius = 5f
+            lineWidth = 2.5f
+            setDrawCircleHole(false)
+            setDrawFilled(true)
+            fillColor = getColor(R.color.murupi_blue)
+            fillAlpha = 40
+            valueTextSize = 11f
+            valueTextColor = getColor(R.color.texto_secundario)
+            valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                override fun getFormattedValue(value: Float): String =
+                    Moeda.formatar(value.toLong(), comSimbolo = false)
+            }
+        }
+        grafico.data = com.github.mikephil.charting.data.LineData(conjunto)
+        grafico.description.isEnabled = false
+        grafico.legend.isEnabled = false
+        grafico.axisRight.isEnabled = false
+        grafico.axisLeft.apply {
+            axisMinimum = 0f
+            textColor = getColor(R.color.texto_secundario)
+            textSize = 10f
+        }
+        grafico.xAxis.apply {
+            position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            textColor = getColor(R.color.texto_secundario)
+            textSize = 11f
+            setDrawGridLines(false)
+            valueFormatter = object : com.github.mikephil.charting.formatter.IndexAxisValueFormatter() {
+                override fun getFormattedValue(value: Float): String =
+                    rotulos.getOrNull(value.toInt()) ?: ""
+            }
+        }
+        grafico.invalidate()
+    }
+
+    private fun rotuloCurtoForma(forma: br.com.murupi.comandas.data.model.FormaPagamento): String = when (forma) {
+        br.com.murupi.comandas.data.model.FormaPagamento.DINHEIRO -> getString(R.string.forma_dinheiro)
+        br.com.murupi.comandas.data.model.FormaPagamento.DEBITO -> getString(R.string.forma_debito)
+        br.com.murupi.comandas.data.model.FormaPagamento.CREDITO -> getString(R.string.forma_credito)
+        br.com.murupi.comandas.data.model.FormaPagamento.PIX -> getString(R.string.forma_pix)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

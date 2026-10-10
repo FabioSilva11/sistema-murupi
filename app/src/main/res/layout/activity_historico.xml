@@ -104,6 +104,49 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAnalises"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/analises"
+                android:textColor="@color/texto_primario"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/por_forma_pagamento"
+                android:textColor="@color/texto_secundario"
+                android:textSize="12sp" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/graficoFormas"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
