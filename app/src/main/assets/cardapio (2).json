@@ -1,5 +1,0 @@
-[
-  { "id": "pizza-1", "nome": "Pizza Calabresa", "preco": 35.00, "categoriaId": "cat-pizzas", "categoria": "Pizzas" },
-  { "id": "pizza-2", "nome": "Pizza Frango Catupiry", "preco": 38.00, "categoriaId": "cat-pizzas", "categoria": "Pizzas" },
-  { "id": "pizza-3", "nome": "Pizza Portuguesa", "preco": 38.00, "categoriaId": "cat-pizzas", "categoria": "Pizzas" }
-]
